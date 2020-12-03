@@ -2,7 +2,7 @@
 
 const {DateTime} = luxon;
 
-const statsJsonUri = 'https://raw.githubusercontent.com/Xiot/advent-of-code/master/leaderboard/2020.json';
+const statsJsonUri = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
 
 window.onload = load;
 console.log('script-load');
