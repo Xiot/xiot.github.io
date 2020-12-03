@@ -19,7 +19,7 @@ function initialize(data) {
     const scores = dataByDay(data);
     console.log(scores);
     scores.forEach(s => {
-        const winner = fastestScore(s.scores, 1);
+        const winner = fastestScore(s.scores, 2);
         if (!winner) return;
         append(grid, [
             div({class: 'day'}, s.day.toString()),
