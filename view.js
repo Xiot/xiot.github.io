@@ -24,7 +24,7 @@ function initialize(data) {
         append(grid, [
             div({class: 'day'}, s.day.toString()),
             div({class: 'name'}, winner.name),
-            div({class: 'time'}, formatTimestamp(s.day, winner.star1))
+            div({class: 'time'}, formatTimestamp(s.day, winner.star2))
         ]);
     });
 }
@@ -51,7 +51,7 @@ function dataByDay(data) {
             name: m.name,
             star1: getStarTime(m, i + 1, 1),
             star2: getStarTime(m, i + 1, 2)
-        })).filter(x => x.star1 && x.star2);
+        })).filter(x => x.star1 || x.star2);
 
         byday[i] = {
             day: i + 1,
