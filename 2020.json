@@ -1,0 +1,185 @@
+{
+  "owner_id": "682929",
+  "members": {
+    "1048865": {
+      "stars": 6,
+      "global_score": 0,
+      "name": "Michael Bieniek",
+      "id": "1048865",
+      "completion_day_level": {
+        "2": {
+          "2": {
+            "get_star_ts": "1606939793"
+          },
+          "1": {
+            "get_star_ts": "1606939262"
+          }
+        },
+        "1": {
+          "1": {
+            "get_star_ts": "1606937955"
+          },
+          "2": {
+            "get_star_ts": "1606938057"
+          }
+        },
+        "3": {
+          "2": {
+            "get_star_ts": "1606985925"
+          },
+          "1": {
+            "get_star_ts": "1606985689"
+          }
+        }
+      },
+      "last_star_ts": "1606985925",
+      "local_score": 8
+    },
+    "307156": {
+      "last_star_ts": "1606972053",
+      "local_score": 18,
+      "stars": 6,
+      "completion_day_level": {
+        "3": {
+          "1": {
+            "get_star_ts": "1606971862"
+          },
+          "2": {
+            "get_star_ts": "1606972053"
+          }
+        },
+        "2": {
+          "1": {
+            "get_star_ts": "1606922530"
+          },
+          "2": {
+            "get_star_ts": "1606922727"
+          }
+        },
+        "1": {
+          "2": {
+            "get_star_ts": "1606839284"
+          },
+          "1": {
+            "get_star_ts": "1606839016"
+          }
+        }
+      },
+      "name": "Orhan Can Özalp",
+      "global_score": 0,
+      "id": "307156"
+    },
+    "989139": {
+      "local_score": 18,
+      "last_star_ts": "1606972476",
+      "stars": 6,
+      "name": "Stefan Gavrilovic",
+      "global_score": 0,
+      "id": "989139",
+      "completion_day_level": {
+        "3": {
+          "2": {
+            "get_star_ts": "1606972476"
+          },
+          "1": {
+            "get_star_ts": "1606972001"
+          }
+        },
+        "2": {
+          "2": {
+            "get_star_ts": "1606886197"
+          },
+          "1": {
+            "get_star_ts": "1606885974"
+          }
+        },
+        "1": {
+          "2": {
+            "get_star_ts": "1606800911"
+          },
+          "1": {
+            "get_star_ts": "1606800820"
+          }
+        }
+      }
+    },
+    "964504": {
+      "stars": 6,
+      "completion_day_level": {
+        "1": {
+          "1": {
+            "get_star_ts": "1606834617"
+          },
+          "2": {
+            "get_star_ts": "1606834869"
+          }
+        },
+        "2": {
+          "2": {
+            "get_star_ts": "1606890786"
+          },
+          "1": {
+            "get_star_ts": "1606890208"
+          }
+        },
+        "3": {
+          "1": {
+            "get_star_ts": "1606972790"
+          },
+          "2": {
+            "get_star_ts": "1606973336"
+          }
+        }
+      },
+      "name": "S. Sepehr",
+      "global_score": 0,
+      "id": "964504",
+      "last_star_ts": "1606973336",
+      "local_score": 14
+    },
+    "682929": {
+      "local_score": 22,
+      "last_star_ts": "1606972113",
+      "stars": 6,
+      "name": "Chris Thomas",
+      "global_score": 0,
+      "id": "682929",
+      "completion_day_level": {
+        "2": {
+          "1": {
+            "get_star_ts": "1606885738"
+          },
+          "2": {
+            "get_star_ts": "1606885942"
+          }
+        },
+        "1": {
+          "2": {
+            "get_star_ts": "1606799808"
+          },
+          "1": {
+            "get_star_ts": "1606799525"
+          }
+        },
+        "3": {
+          "1": {
+            "get_star_ts": "1606971894"
+          },
+          "2": {
+            "get_star_ts": "1606972113"
+          }
+        }
+      }
+    },
+    "775842": {
+      "completion_day_level": {},
+      "global_score": 0,
+      "id": "775842",
+      "name": "Jacob Tsafatinos",
+      "stars": 0,
+      "last_star_ts": 0,
+      "local_score": 0
+    }
+  },
+  "event": "2020"
+}
