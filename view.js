@@ -18,12 +18,19 @@ function initialize(data) {
 
     const scores = dataByDay(data);
     console.log(scores);
+    append(grid, [
+        div({class: 'day title'}, 'day'),
+        div({class: 'name title'}, 'name'),
+        div({class: 'time title'}, 'star 1'),
+        div({class: 'time title'}, 'star 2')
+    ]);
     scores.forEach(s => {
         const winner = fastestScore(s.scores, 2);
         if (!winner) return;
         append(grid, [
             div({class: 'day'}, s.day.toString()),
             div({class: 'name'}, winner.name),
+            div({class: 'time'}, formatTimestamp(s.day, winner.star1)),
             div({class: 'time'}, formatTimestamp(s.day, winner.star2))
         ]);
     });
