@@ -26,5 +26,10 @@
 }
 
 section {
+  font-size: 1em;
+}
+
+.phone section {
   font-size: 2em;
+  color: red
 }

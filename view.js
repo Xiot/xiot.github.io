@@ -8,6 +8,11 @@ let stats;
 window.onload = load;
 
 function load() {
+
+    if (window.outerWidth < 800) {
+        document.getElementById('root').classList.add('phone')
+    }
+
     fetch(statsJsonUri)
         .then(x => x.json())
         .then(data => initialize(data));
