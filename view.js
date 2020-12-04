@@ -5,6 +5,8 @@ const {DateTime} = luxon;
 const statsJsonUri = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
 const trophySvg = createTrophy();
 
+const startOffset = (9 * 60 + 30) * 60 * 1000;
+
 let stats;
 
 window.onload = load;
@@ -14,7 +16,7 @@ function load() {
     if (window.outerWidth < 800) {
         document.getElementById('root').classList.add('phone')
     }
-    // refreshTrophies();
+
     fetch(statsJsonUri)
         .then(x => x.json())
         .then(data => initialize(data));
@@ -140,7 +142,11 @@ function formatTimestamp(day, ts) {
         .setZone('America/Toronto', {keepLocalTime: true})
         .plus({days: day - 1});
 
-    const duration = DateTime.fromMillis(ts).diff(startOfDay);
+    let duration = DateTime.fromMillis(ts).diff(startOfDay);
+
+    if (duration.as('milliseconds') > startOffset)
+        duration = duration.plus({milliseconds: -startOffset});
+
     return duration.toFormat('hh:mm:ss');
 }
 
