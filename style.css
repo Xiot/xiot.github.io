@@ -1,18 +1,22 @@
-#ranking-grid {
+.rank-grid {
   display: grid;
-  grid-template-columns: 4em 20em 15em 15em;
+  grid-template-columns: 4em 20em 10em 3em 10em 3em;
+  grid-auto-rows: 2em;
   row-gap: 4px;
+  align-items: center;
 }
 
-#speed-grid {
-  display: grid;
-  grid-template-columns: 4em 20em 15em 15em;
-  row-gap: 4px;
-}
+.empty {width: 0; height: 0;}
 
 .time.value {
   font-family: 'Courier New';
-  justify-self: 'end';
+}
+
+.time {
+  justify-self: end;
+}
+.rank-grid .trophy {
+  justify-self: end;
 }
 
 .link {
@@ -35,4 +39,29 @@ section {
 
 .day {
   padding-left: 1em;
+}
+
+.trophy {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  stroke: black;
+  stroke-width: 2em;
+}
+
+i.trophy svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gold {
+  color: gold;
+}
+
+.silver {
+  color: silver;
+}
+
+.bronze {
+  color: brown;
 }
