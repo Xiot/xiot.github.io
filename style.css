@@ -1,13 +1,18 @@
 #ranking-grid {
   display: grid;
-  grid-template-columns: 30px 200px 80px 80px;
+  grid-template-columns: 4em 20em 15em 15em;
   row-gap: 4px;
 }
 
 #speed-grid {
   display: grid;
-  grid-template-columns: 30px 200px 80px 80px;
+  grid-template-columns: 4em 20em 15em 15em;
   row-gap: 4px;
+}
+
+.time.value {
+  font-family: 'Courier New';
+  justify-self: 'end';
 }
 
 .link {
@@ -18,4 +23,8 @@
 
 #fastest {
   margin-top: 32px;
+}
+
+section {
+  font-size: 2em;
 }

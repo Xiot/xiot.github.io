@@ -27,16 +27,16 @@ function initialize(data) {
         const winner = fastestScore(s.scores, 2);
         if (!winner) return;
         append(grid, [
-            div({class: 'day link', onclick: () => showStatsForDay(s.day)}, s.day.toString()),
-            div({class: 'name'}, winner.name),
-            div({class: 'time'}, formatTimestamp(s.day, winner.star1)),
-            div({class: 'time'}, formatTimestamp(s.day, winner.star2))
+            div({class: 'day link value', onclick: () => showStatsForDay(s.day)}, s.day.toString()),
+            div({class: 'name value'}, winner.name),
+            div({class: 'time value'}, formatTimestamp(s.day, winner.star1)),
+            div({class: 'time value'}, formatTimestamp(s.day, winner.star2))
         ]);
     });
 }
 
 function showStatsForDay(dayIndex) {
-    console.log('show', dayIndex);
+
     const el = document.getElementById('speed-grid');
     while(el.firstChild)
         el.removeChild(el.lastChild);
@@ -48,10 +48,10 @@ function showStatsForDay(dayIndex) {
 
     sorted.forEach((user, index) => {
         append(el, [
-            div({class: 'day'}, (index + 1).toString()),
-            div({class: 'name'}, user.name),
-            div({class: 'time'}, formatTimestamp(dayIndex, user.star1)),
-            div({class: 'time'}, formatTimestamp(dayIndex, user.star2))
+            div({class: 'day value'}, (index + 1).toString()),
+            div({class: 'name value'}, user.name),
+            div({class: 'time value'}, formatTimestamp(dayIndex, user.star1)),
+            div({class: 'time value'}, formatTimestamp(dayIndex, user.star2))
         ]);
     });
 }
