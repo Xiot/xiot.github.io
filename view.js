@@ -3,11 +3,11 @@
 const {DateTime} = luxon;
 
 const statsJsonUri = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
+let stats;
 
 window.onload = load;
-console.log('script-load');
+
 function load() {
-    console.log('test');
     fetch(statsJsonUri)
         .then(x => x.json())
         .then(data => initialize(data));
@@ -15,20 +15,19 @@ function load() {
 
 function initialize(data) {
     const grid = document.getElementById('ranking-grid');
+    stats = dataByDay(data);
 
-    const scores = dataByDay(data);
-    console.log(scores);
     append(grid, [
         div({class: 'day title'}, 'day'),
         div({class: 'name title'}, 'name'),
         div({class: 'time title'}, 'star 1'),
         div({class: 'time title'}, 'star 2')
     ]);
-    scores.forEach(s => {
+    stats.forEach(s => {
         const winner = fastestScore(s.scores, 2);
         if (!winner) return;
         append(grid, [
-            div({class: 'day'}, s.day.toString()),
+            div({class: 'day link', onclick: () => showStatsForDay(s.day)}, s.day.toString()),
             div({class: 'name'}, winner.name),
             div({class: 'time'}, formatTimestamp(s.day, winner.star1)),
             div({class: 'time'}, formatTimestamp(s.day, winner.star2))
@@ -36,6 +35,26 @@ function initialize(data) {
     });
 }
 
+function showStatsForDay(dayIndex) {
+    console.log('show', dayIndex);
+    const el = document.getElementById('speed-grid');
+    while(el.firstChild)
+        el.removeChild(el.lastChild);
+
+    document.getElementById('day').innerText = `Day ${dayIndex}`;
+
+    const day = stats[dayIndex - 1];
+    const sorted = [...day.scores].sort((l, r) => l.star2 - r.star2);
+
+    sorted.forEach((user, index) => {
+        append(el, [
+            div({class: 'day'}, (index + 1).toString()),
+            div({class: 'name'}, user.name),
+            div({class: 'time'}, formatTimestamp(dayIndex, user.star1)),
+            div({class: 'time'}, formatTimestamp(dayIndex, user.star2))
+        ]);
+    });
+}
 
 function fastestScore(scores, star) {
     if (scores.length === 0) {
@@ -49,6 +68,7 @@ function fastestScore(scores, star) {
         return fastest;
     });
 }
+
 function dataByDay(data) {
     const members = Object.values(data.members);
     let byday = [];
@@ -90,7 +110,7 @@ function get(obj, keys) {
     for(let key of keys) {
         obj = obj[key];
         if (obj == null) {
-            return obj;
+            return undefined;
         }
     }
     return obj;
@@ -102,9 +122,13 @@ function text(value) {
 
 function div(props, children) {
     const el = document.createElement('div');
-    props && Object.entries(props).forEach(([key, value]) =>
-        el.setAttribute(key, value)
-    );
+    props && Object.entries(props).forEach(([key, value]) => {
+        if (key.startsWith('on')) {
+            el[key] = value;
+        } else {
+            el.setAttribute(key, value);
+        }
+    });
     append(el, children);
     return el;
 }
