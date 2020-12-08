@@ -55,6 +55,7 @@ function getPosition(day, star, ts) {
 
     const sorted = [...day.scores]
         .map(member => {
+            if (!member[`star${star}`]) return Number.MAX_SAFE_INTEGER;
             return member[`star${star}`].duration;
         })
     .sort((l, r) => l - r);
@@ -105,7 +106,7 @@ function fastestScore(scores, star) {
     }
     const key = `star${star}`;
     return scores.reduce((fastest, score) => {
-        if (fastest[key].duration > score[key].duration) {
+        if (score[key] && fastest[key].duration > score[key].duration) {
             return score;
         }
         return fastest;
