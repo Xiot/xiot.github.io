@@ -6,6 +6,16 @@
   align-items: center;
 }
 
+.medal-grid {
+  display: grid;
+  grid-template-columns: 20em repeat(25, auto) minmax(0, 1fr);
+  grid-auto-rows: auto;
+  gap: 2px 8px;
+}
+.medal-grid .trophy {
+  padding: 4px;
+}
+
 .empty {width: 0; height: 0;}
 
 .time.value {

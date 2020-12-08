@@ -28,6 +28,10 @@ function initialize(data) {
 
     console.log(stats);
 
+    document.getElementById('medals').appendChild(
+        buildMedalGrid(data)
+    )
+
     append(grid, [
         div({class: 'day title'}, 'day'),
         div({class: 'name title'}, 'name'),
@@ -113,6 +117,35 @@ function fastestScore(scores, star) {
     });
 }
 
+function buildMedalGrid(scores) {
+    const el = div({class: 'medal-grid'});
+    const members = Object.values(scores.members);
+
+    for(let member of members) {
+        const row = range(25).map(i => {
+            const star1 = getStarTime(member, i+1, 1);
+            const star2 = getStarTime(member, i+1, 2);
+            const pos1 = getPosition(stats[i], 1, star1)
+            const pos2 = getPosition(stats[i], 2, star2)
+
+            const star = trophy(pos2);
+            const strokeColor = ['transparent', 'gold', 'silver', 'brown'][pos1 + 1]
+            // star.style['border'] = `2px solid ${strokeColor}`
+            star.style['background-color'] = strokeColor;
+            star.style['grid-column'] = `${i + 2}`
+            return star;
+        })
+        el.appendChild(
+            div({'grid-column': '1'}, text(member.name))
+        )
+        for(let r of row) {
+            el.appendChild(r);
+        }
+        el.appendChild(div({}))
+    }
+    return el;
+}
+
 function dataByDay(data) {
     const members = Object.values(data.members);
     let byday = [];
@@ -130,6 +163,10 @@ function dataByDay(data) {
         };
     }
     return byday;
+}
+
+function range(to) {
+    return Array.from(new Array(to), (x, i) => i)
 }
 
 function getStarTime(member, day, star) {
@@ -203,7 +240,7 @@ function div(props, children) {
             el.setAttribute(key, value);
         }
     });
-    append(el, children);
+    children && append(el, children);
     return el;
 }
 
@@ -234,7 +271,7 @@ function removeChildren(el) {
 }
 
 function trophy(position) {
-    if (position < 0 || position > 2) return document.createElement('div');
+    if (position < 0 || position > 2) return div({class: 'trophy'}) //document.createElement('div');
     const classes = ['gold', 'silver', 'bronze'];
     const el = document.createElement('i');
     const className = classes[position];
