@@ -22,16 +22,84 @@ function load() {
         .then(data => initialize(data));
 }
 
-function initialize(data) {
-    const grid = document.getElementById('ranking-grid');
-    stats = dataByDay(data);
+function transformData(input) {
+    const members = Object.values(input.members)
+        .map(transformMemberData);
 
-    console.log(stats);
+    populatePositions(members);
+    calculateLocalScore(members);
+
+    members.sort(membersByTotalScore);
+
+    return members;
+}
+
+function populatePositions(members) {
+
+    range(25).forEach(day => {
+        const data1 = [...members]
+            .sort(membersByStar(day, 1));
+        const data2 = [...members]
+            .sort(membersByStar(day, 2));
+
+        for(i = 0; i < data1.length; i++) {
+            if (data1[i].days[day].star1)
+                data1[i].days[day].star1.position = i;
+        }
+        for(i = 0; i < data2.length; i++) {
+            if (data2[i].days[day].star2)
+                data2[i].days[day].star2.position = i;
+        }
+    })
+}
+
+function calculateLocalScore(members) {
+    const positionScore = pos => pos == null ? 0 : members.length - pos;
+    for (let i = 0; i < members.length; i++) {
+        let sum = 0;
+        range(25).forEach(day => {
+            sum += positionScore(members[i].days[day].star1?.position)
+            sum += positionScore(members[i].days[day].star2?.position)
+        })
+        members[i].score = sum;
+    }
+}
+
+function membersByStar(day, star) {
+    return (l, r) => {
+        const left = l.days[day][`star${star}`]?.duration ?? Number.MAX_SAFE_INTEGER;
+        const right = r.days[day][`star${star}`]?.duration ?? Number.MAX_SAFE_INTEGER;
+        return left - right;
+    }
+}
+
+function membersByTotalScore(l, r) {
+    return r.score - l.score;
+}
+
+function transformMemberData(member) {
+    return {
+        name: member.name,
+        days: range(25).map(index => {
+            return {
+                star1: getStarTime(member, index + 1, 1),
+                star2: getStarTime(member, index + 1, 2),
+            }
+        })
+    }
+}
+
+
+function initialize(data) {
+
+    const members = transformData(data);
 
     document.getElementById('medals').appendChild(
-        buildMedalGrid(data)
+        buildMedalGrid(members)
     )
 
+    const grid = document.getElementById('ranking-grid');
+    stats = dataByDay(data);
     append(grid, [
         div({class: 'day title'}, ''),
         div({class: 'name title'}, 'name'),
@@ -117,23 +185,21 @@ function fastestScore(scores, star) {
     });
 }
 
-function buildMedalGrid(scores) {
+function buildMedalGrid(members) {
     const el = div({class: 'medal-grid'});
-    const members = Object.values(scores.members);
 
     for(let member of members) {
         const row = range(25).map(i => {
-            const star1 = getStarTime(member, i+1, 1);
-            const star2 = getStarTime(member, i+1, 2);
-            const pos1 = getPosition(stats[i], 1, star1)
-            const pos2 = getPosition(stats[i], 2, star2)
+            const star1 = member.days[i].star1;
+            const star2 = member.days[i].star2;
+            const pos1 = star1?.position ?? -1;
+            const pos2 = star2?.position ?? -1;
 
             const star = trophy(pos2);
             const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
-            // star.style['border'] = `2px solid ${strokeColor}`
             star.style['background-color'] = strokeColor;
 
-            star.style['grid-column'] = `${i + 2}`
+            star.style['grid-column'] = `${i + 3}`
             if (pos2 >= 0) {
                 star.style.position = 'relative';
                 star.appendChild(
@@ -159,7 +225,10 @@ function buildMedalGrid(scores) {
             return star;
         })
         el.appendChild(
-            div({class: 'name', 'grid-column': '1'}, text(member.name))
+            div({class: 'score', 'grid-column': '1'}, text(member.score))
+        )
+        el.appendChild(
+            div({class: 'name', 'grid-column': '2'}, text(member.name))
         )
         for(let r of row) {
             el.appendChild(r);
