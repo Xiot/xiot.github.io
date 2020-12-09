@@ -33,7 +33,7 @@ function initialize(data) {
     )
 
     append(grid, [
-        div({class: 'day title'}, 'day'),
+        div({class: 'day title'}, ''),
         div({class: 'name title'}, 'name'),
         div({class: 'time title'}, 'star 1'),
         div({class: 'trophy title empty'}),
@@ -129,14 +129,37 @@ function buildMedalGrid(scores) {
             const pos2 = getPosition(stats[i], 2, star2)
 
             const star = trophy(pos2);
-            const strokeColor = ['transparent', 'gold', 'silver', 'brown'][pos1 + 1]
+            const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
             // star.style['border'] = `2px solid ${strokeColor}`
             star.style['background-color'] = strokeColor;
+
             star.style['grid-column'] = `${i + 2}`
+            if (pos2 >= 0) {
+                star.style.position = 'relative';
+                star.appendChild(
+                    div({style: {
+                        display: 'flex',
+                        'justify-content': 'center',
+                        'align-items': 'center',
+                        'font-weight': 'bold',
+                        position: 'absolute',
+                        left: 0, right: 0, top: 0, bottom: 0,
+                        color: 'black',
+                        'padding-top': '2px'
+                        // width: '100%',
+                        // height: '100%'
+                    }}, text(pos2+1))
+                )
+                // star.appendChild(text(pos2+1));
+                // star.style.display = 'flex';
+                // star.style['justify-content'] = 'center';
+                // star.style['align-items'] = 'center';
+                // star.style['font-weight'] = 'bold';
+            }
             return star;
         })
         el.appendChild(
-            div({'grid-column': '1'}, text(member.name))
+            div({class: 'name', 'grid-column': '1'}, text(member.name))
         )
         for(let r of row) {
             el.appendChild(r);
@@ -236,6 +259,10 @@ function div(props, children) {
     props && Object.entries(props).forEach(([key, value]) => {
         if (key.startsWith('on')) {
             el[key] = value;
+        } else if (key === 'style') {
+            Object.entries(value).forEach(([key, value]) =>
+                el.style[key] = value
+            )
         } else {
             el.setAttribute(key, value);
         }
