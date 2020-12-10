@@ -58,7 +58,6 @@ function calculateLocalScore(members) {
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
         range(25).forEach(day => {
-            if (day === 0) return;
             sum += positionScore(members[i].days[day].star1?.position)
             sum += positionScore(members[i].days[day].star2?.position)
         })
