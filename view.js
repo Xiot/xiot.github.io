@@ -58,6 +58,7 @@ function calculateLocalScore(members) {
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
         range(25).forEach(day => {
+            if (day === 0) return;
             sum += positionScore(members[i].days[day].star1?.position)
             sum += positionScore(members[i].days[day].star2?.position)
         })
@@ -203,24 +204,8 @@ function buildMedalGrid(members) {
             if (pos2 >= 0) {
                 star.style.position = 'relative';
                 star.appendChild(
-                    div({style: {
-                        display: 'flex',
-                        'justify-content': 'center',
-                        'align-items': 'center',
-                        'font-weight': 'bold',
-                        position: 'absolute',
-                        left: 0, right: 0, top: 0, bottom: 0,
-                        color: 'black',
-                        'padding-top': '2px'
-                        // width: '100%',
-                        // height: '100%'
-                    }}, text(pos2+1))
+                    div({class: 'position'}, text(pos2+1))
                 )
-                // star.appendChild(text(pos2+1));
-                // star.style.display = 'flex';
-                // star.style['justify-content'] = 'center';
-                // star.style['align-items'] = 'center';
-                // star.style['font-weight'] = 'bold';
             }
             return star;
         })
@@ -320,7 +305,7 @@ function get(obj, keys) {
 }
 
 function text(value) {
-    return document.createTextNode(value);
+    return document.createTextNode(String(value));
 }
 
 function div(props, children) {
