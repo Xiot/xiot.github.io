@@ -3,7 +3,7 @@
 const {DateTime, Duration} = luxon;
 
 const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
-const statsJsonUri = 'http://portal.xiot.ca/aoc-2020.json';
+const statsJsonUri = 'https://portal.xiot.ca/aoc-2020.json';
 const trophySvg = createTrophy();
 
 const startOffset = (9 * 60 + 30) * 60 * 1000;
