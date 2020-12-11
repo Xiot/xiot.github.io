@@ -2,7 +2,8 @@
 
 const {DateTime, Duration} = luxon;
 
-const statsJsonUri = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
+const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
+const statsJsonUri = 'http://portal.xiot.ca/aoc-2020.json';
 const trophySvg = createTrophy();
 
 const startOffset = (9 * 60 + 30) * 60 * 1000;
@@ -18,6 +19,7 @@ function load() {
     }
 
     fetch(statsJsonUri)
+        .catch(ex => fetch(statsJsonUriLocal))
         .then(x => x.json())
         .then(data => initialize(data));
 }
