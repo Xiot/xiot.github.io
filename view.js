@@ -208,17 +208,22 @@ function buildMedalGrid(members) {
     const days = dataByDay(members);
 
     append(el, [
-        div({style: 'grid-column: 1;'}),
+        div({style: 'grid-column: start;'}),
+        trophy(0, {class: 'header'}),
+        trophy(1, {class: 'header'}),
+        trophy(2, {class: 'header'}),
         div({
             class: 'name header',
-            style: 'grid-column: 2;',
+            style: 'grid-column: name;',
         }, text('Name')),
+
         ...days
             .map(day => div({
                 class: 'day header',
-                style: `grid-column: ${day.day+3}`,
+                style: `grid-column: ${day.day+6}`,
                 onclick: () => showStatsForDay(day)
-            }, text(day.day+1)))
+            }, text(day.day+1))),
+        div({class: 'header-border'})
     ]);
 
     for(let member of members) {
@@ -232,7 +237,7 @@ function buildMedalGrid(members) {
             const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
             star.style['background-color'] = strokeColor;
             star.classList.add('day');
-            star.style['grid-column'] = `${i + 3}`
+            star.style['grid-column'] = `${i + 6}`
             if (pos2 >= 0) {
                 star.style.position = 'relative';
                 star.appendChild(
@@ -244,15 +249,37 @@ function buildMedalGrid(members) {
         el.appendChild(
             div({class: 'score', style: 'grid-column: 1'}, text(member.score))
         )
+
+
+        const medals = member.days.reduce((acc, day) => {
+            acc.gold += medalsForDay(day, 0);
+            acc.silver += medalsForDay(day, 1);
+            acc.bronze += medalsForDay(day, 2);
+            return acc;
+        }, {gold: 0, silver: 0, bronze: 0})
+
+        append(el, [
+            div({class: 'medal-count gold'}, text(medals.gold)),
+            div({class: 'medal-count silver'}, text(medals.silver)),
+            div({class: 'medal-count bronze'}, text(medals.bronze))
+        ])
+
         el.appendChild(
-            div({class: 'name', style: 'grid-column: 2'}, text(member.name))
+            div({class: 'name', style: 'grid-column: name'}, text(member.name))
         )
+
         for(let r of row) {
             el.appendChild(r);
         }
         el.appendChild(div({}))
     }
     return el;
+}
+function medalsForDay(day, position) {
+    return isPosition(day.star1, position) ? 1 : 0 + isPosition(day.star2, position) ? 1 : 0
+}
+function isPosition(star, target) {
+    return star?.position === target;
 }
 
 function dataByDay(members) {
@@ -308,8 +335,8 @@ function text(value) {
     return document.createTextNode(String(value));
 }
 
-function div(props, children) {
-    const el = document.createElement('div');
+function node(tag, props, children) {
+    const el = document.createElement(tag);
     props && Object.entries(props).forEach(([key, value]) => {
         if (key.startsWith('on')) {
             el[key] = value;
@@ -323,6 +350,10 @@ function div(props, children) {
     });
     children && append(el, children);
     return el;
+}
+
+function div(props, children) {
+    return node('div', props, children);
 }
 
 function append(target, children) {
@@ -351,12 +382,16 @@ function removeChildren(el) {
         el.removeChild(el.lastChild);
 }
 
-function trophy(position) {
+function trophy(position, props) {
     if (position < 0 || position > 2) return div({class: 'trophy'});
     const classes = ['gold', 'silver', 'bronze'];
-    const el = document.createElement('i');
     const className = classes[position];
-    el.classList.add('trophy', className);
-    el.appendChild(trophySvg.cloneNode(true))
+
+    const {class: additionalClasses, ...otherProps} = props ?? {};
+
+    const el = node('i', {
+        class: `trophy ${className} ${additionalClasses}`,
+        ...otherProps
+    }, trophySvg.cloneNode(true))
     return el;
 }

@@ -17,7 +17,7 @@ section {
 
 .medal-grid {
   display: grid;
-  grid-template-columns: 2em 10em repeat(25, auto) minmax(0, 1fr);
+  grid-template-columns: [start] 2em repeat(3, auto) [name] 10em repeat(25, auto) minmax(0, 1fr) [end];
   grid-auto-rows: auto;
   gap: 8px 8px;
 }
@@ -25,8 +25,26 @@ section {
 .medal-grid .trophy {
   padding: 4px;
 }
+
+.medal-grid .header-border {
+  height: 2px;
+  grid-column: start / end;
+  grid-row: 2;
+  background-color: black;
+}
+
 .medal-grid .header {
-  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.medal-grid .trophy.header {
+  width: 16px;
+  height: 16px;
+}
+
+.medal-grid .medal-count {
+  color: black;
+  justify-self: center;
 }
 
 .medal-grid .day.header {
