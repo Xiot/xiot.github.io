@@ -19,11 +19,20 @@ section {
   display: grid;
   grid-template-columns: 2em 10em repeat(25, auto) minmax(0, 1fr);
   grid-auto-rows: auto;
-  gap: 2px 8px;
+  gap: 8px 8px;
 }
 
 .medal-grid .trophy {
   padding: 4px;
+}
+.medal-grid .header {
+  margin-bottom: 4px;
+}
+
+.medal-grid .day.header {
+  justify-self: center;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 @media (max-width: 800px) {

@@ -8,8 +8,6 @@ const trophySvg = createTrophy();
 
 const startOffset = (9 * 60 + 30) * 60 * 1000;
 
-let stats;
-
 window.onload = load;
 
 function load() {
@@ -83,14 +81,31 @@ function transformMemberData(member) {
     return {
         name: member.name,
         days: range(25).map(index => {
-            return {
-                star1: getStarTime(member, index + 1, 1),
-                star2: getStarTime(member, index + 1, 2),
-            }
+            return buildMemberDayStats(member, index + 1);
         })
     }
 }
 
+function buildMemberDayStats(member, day) {
+
+    const star1Timestamp = getStarTimestamp(member, day, 1);
+    const star2Timestamp = getStarTimestamp(member, day, 2);
+    const startTime = getDayStartTime(day, star1Timestamp);
+
+    const buildStar = (ts, startTime) => {
+        if (!ts) { return undefined; }
+        const duration = DateTime.fromMillis(ts).diff(startTime).as('milliseconds');
+        return {
+            timestamp: ts,
+            duration
+        }
+    }
+
+    return {
+        star1: buildStar(star1Timestamp, startTime),
+        star2: buildStar(star2Timestamp, startTime),
+    }
+}
 
 function initialize(data) {
 
@@ -101,7 +116,8 @@ function initialize(data) {
     )
 
     const grid = document.getElementById('ranking-grid');
-    stats = dataByDay(data);
+    const days = dataByDay(members);
+
     append(grid, [
         div({class: 'day title'}, ''),
         div({class: 'name title'}, 'name'),
@@ -110,16 +126,16 @@ function initialize(data) {
         div({class: 'time title'}, 'star 2'),
         div({class: 'trophy title empty'}),
     ]);
-    stats.forEach(s => {
-        const winner = fastestScore(s.scores, 2);
+    days.forEach(day => {
+        const winner = fastestScore(day.scores, 2);
         if (!winner) return;
         append(grid, [
-            div({class: 'day link value', onclick: () => showStatsForDay(s.day)}, s.day.toString()),
+            div({class: 'day link value', onclick: () => showStatsForDay(day)}, (day.day + 1).toString()),
             div({class: 'name value'}, winner.name),
             div({class: 'time value'}, formatStarTime(winner.star1)),
-            trophy(getPosition(s, 1, winner.star1)),
+            trophy(getPosition(day, 1, winner.star1)),
             div({class: 'time value'}, formatStarTime(winner.star2)),
-            trophy(getPosition(s, 2, winner.star2)),
+            trophy(getPosition(day, 2, winner.star2)),
         ]);
     });
 }
@@ -137,15 +153,14 @@ function getPosition(day, star, ts) {
     return sorted.indexOf(ts.duration);
 }
 
-function showStatsForDay(dayIndex) {
+function showStatsForDay(day) {
 
     const el = document.getElementById('speed-grid');
     while(el.firstChild)
         el.removeChild(el.lastChild);
 
-    document.getElementById('day').innerText = `Day ${dayIndex}`;
+    document.getElementById('day').innerText = `Day ${day.day + 1}`;
 
-    const day = stats[dayIndex - 1];
     const sorted = [...day.scores].sort((l, r) => {
 
         const {
@@ -190,6 +205,22 @@ function fastestScore(scores, star) {
 function buildMedalGrid(members) {
     const el = div({class: 'medal-grid'});
 
+    const days = dataByDay(members);
+console.log(days);
+    append(el, [
+        div({style: 'grid-column: 1;'}),
+        div({
+            class: 'name header',
+            style: 'grid-column: 2;',
+        }, text('Name')),
+        ...days
+            .map(day => div({
+                class: 'day header',
+                style: `grid-column: ${day.day+3}`,
+                onclick: () => showStatsForDay(day)
+            }, text(day.day+1)))
+    ]);
+
     for(let member of members) {
         const row = range(25).map(i => {
             const star1 = member.days[i].star1;
@@ -200,7 +231,7 @@ function buildMedalGrid(members) {
             const star = trophy(pos2);
             const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
             star.style['background-color'] = strokeColor;
-
+            star.classList.add('day');
             star.style['grid-column'] = `${i + 3}`
             if (pos2 >= 0) {
                 star.style.position = 'relative';
@@ -211,10 +242,10 @@ function buildMedalGrid(members) {
             return star;
         })
         el.appendChild(
-            div({class: 'score', 'grid-column': '1'}, text(member.score))
+            div({class: 'score', style: 'grid-column: 1'}, text(member.score))
         )
         el.appendChild(
-            div({class: 'name', 'grid-column': '2'}, text(member.name))
+            div({class: 'name', style: 'grid-column: 2'}, text(member.name))
         )
         for(let r of row) {
             el.appendChild(r);
@@ -224,75 +255,43 @@ function buildMedalGrid(members) {
     return el;
 }
 
-function dataByDay(data) {
-    const members = Object.values(data.members);
-    let byday = [];
-    for(let i = 0; i < 25; i++) {
-
-        const scores = members.map(m => ({
-            name: m.name,
-            star1: getStarTime(m, i + 1, 1),
-            star2: getStarTime(m, i + 1, 2)
-        })).filter(x => x.star1 || x.star2);
-
-        byday[i] = {
-            day: i + 1,
-            scores,
-        };
-    }
-    return byday;
+function dataByDay(members) {
+    return range(25)
+        .map(day => ({
+            day,
+            scores: members.map(m => ({
+                name: m.name,
+                ...m.days[day]
+            })).filter(m => m.star1 || m.star2)
+        })).filter(d => d.scores.length > 0);
 }
 
 function range(to) {
     return Array.from(new Array(to), (x, i) => i)
 }
 
-function getStarTime(member, day, star) {
+function getStarTimestamp(member, day, star) {
     const text = get(member, ['completion_day_level', day, star, 'get_star_ts']);
-    const timestamp = text ? parseInt(text, 10) * 1000 : undefined;
-    if (!timestamp) return undefined;
-    return {
-        timestamp,
-        duration: duration(day, timestamp)
-    }
+    return text ? parseInt(text, 10) * 1000 : undefined;
 }
 
-function duration(day, ts) {
+function getDayStartTime(day, ts) {
     if (!ts) return undefined;
 
     const startOfDay = DateTime.local(2020, 12, 1)
         .setZone('America/Toronto', {keepLocalTime: true})
         .plus({days: day - 1});
 
-    let duration = DateTime.fromMillis(ts).diff(startOfDay);
-
-    const newStartTime = duration.as('milliseconds') > startOffset;
-    if (newStartTime)
-        duration = duration.plus({milliseconds: -startOffset});
-
-    return duration.as('milliseconds');
+    const secondStart = startOfDay.plus({hours: 9, minutes: 30});
+    const solveTime = DateTime.fromMillis(ts);
+    return ts > secondStart
+        ? secondStart
+        : startOfDay;
 }
 
 function formatStarTime(star) {
     if (!star || !star.duration) return '';
     return Duration.fromMillis(star.duration).toFormat('hh:mm:ss');
-}
-
-function formatTimestamp(day, ts) {
-
-    if (!ts) return '';
-
-    const startOfDay = DateTime.local(2020, 12, 1)
-        .setZone('America/Toronto', {keepLocalTime: true})
-        .plus({days: day - 1});
-
-    let duration = DateTime.fromMillis(ts).diff(startOfDay);
-
-    const newStartTime = duration.as('milliseconds') > startOffset;
-    if (newStartTime)
-        duration = duration.plus({milliseconds: -startOffset});
-
-    return duration.toFormat('hh:mm:ss');
 }
 
 function get(obj, keys) {
@@ -314,7 +313,7 @@ function div(props, children) {
     props && Object.entries(props).forEach(([key, value]) => {
         if (key.startsWith('on')) {
             el[key] = value;
-        } else if (key === 'style') {
+        } else if (key === 'style' && typeof value !== 'string') {
             Object.entries(value).forEach(([key, value]) =>
                 el.style[key] = value
             )
@@ -353,19 +352,11 @@ function removeChildren(el) {
 }
 
 function trophy(position) {
-    if (position < 0 || position > 2) return div({class: 'trophy'}) //document.createElement('div');
+    if (position < 0 || position > 2) return div({class: 'trophy'});
     const classes = ['gold', 'silver', 'bronze'];
     const el = document.createElement('i');
     const className = classes[position];
     el.classList.add('trophy', className);
     el.appendChild(trophySvg.cloneNode(true))
     return el;
-}
-
-function refreshTrophies() {
-    const els = document.querySelectorAll('i.trophy');
-    for(const el of els) {
-        removeChildren(el);
-        el.appendChild(trophySvg.cloneNode(true));
-    }
 }
