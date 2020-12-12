@@ -206,7 +206,7 @@ function buildMedalGrid(members) {
     const el = div({class: 'medal-grid'});
 
     const days = dataByDay(members);
-console.log(days);
+
     append(el, [
         div({style: 'grid-column: 1;'}),
         div({
