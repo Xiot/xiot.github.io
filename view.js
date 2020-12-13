@@ -298,6 +298,10 @@ function range(to) {
 }
 
 function getStarTimestamp(member, day, star) {
+    if (didGiveUp(member, day, star)) {
+        return undefined;
+    }
+
     const text = get(member, ['completion_day_level', day, star, 'get_star_ts']);
     return text ? parseInt(text, 10) * 1000 : undefined;
 }
@@ -395,3 +399,15 @@ function trophy(position, props) {
     }, trophySvg.cloneNode(true))
     return el;
 }
+
+function didGiveUp(member, day, star) {
+    return !!get(disqualified, [member.name, String(day), String(star)])
+}
+
+const disqualified = {
+    "Chris Thomas": {
+      "13" : {
+        "2": true
+      }
+    }
+  }
