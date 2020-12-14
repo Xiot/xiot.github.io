@@ -92,18 +92,19 @@ function buildMemberDayStats(member, day) {
     const star2Timestamp = getStarTimestamp(member, day, 2);
     const startTime = getDayStartTime(day, star1Timestamp);
 
-    const buildStar = (ts, startTime) => {
+    const buildStar = (ts, startTime, star) => {
         if (!ts) { return undefined; }
         const duration = DateTime.fromMillis(ts).diff(startTime).as('milliseconds');
         return {
             timestamp: ts,
-            duration
+            duration,
+            gaveUp: didGiveUp(member, day, star)
         }
     }
 
     return {
-        star1: buildStar(star1Timestamp, startTime),
-        star2: buildStar(star2Timestamp, startTime),
+        star1: buildStar(star1Timestamp, startTime, 1),
+        star2: buildStar(star2Timestamp, startTime, 2),
     }
 }
 
@@ -406,8 +407,13 @@ function didGiveUp(member, day, star) {
 
 const disqualified = {
     "Chris Thomas": {
-      "13" : {
-        "2": true
-      }
+        "13" : {
+            "2": true
+        }
+    },
+    "S. Sepehr": {
+        "13": {
+            "2": true
+        }
     }
   }
