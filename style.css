@@ -113,6 +113,10 @@ section {
   stroke-width: 3em;
 }
 
+.trophy.dnf {
+  font-size: 14px;
+}
+
 .trophy div {
   display: 'flex';
   justify-content: center;

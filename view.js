@@ -156,7 +156,7 @@ function getPosition(day, starIndex, star) {
 
 function starDuration(star) {
     if (!star) return Number.MAX_SAFE_INTEGER;
-    if (star.gaveUp) return Number.MAX_SAFE_INTEGER;
+    if (star.gaveUp) return Number.MAX_SAFE_INTEGER / 2 + star.duration;
     return star.duration;
 }
 
@@ -236,16 +236,18 @@ function buildMedalGrid(members) {
             const pos1 = star1?.position ?? -1;
             const pos2 = star2?.position ?? -1;
 
-            const star = trophy(pos2);
+            const star = starTrophy(star2);
             const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
             star.style['background-color'] = strokeColor;
             star.classList.add('day');
             star.style['grid-column'] = `${i + 6}`
             if (pos2 >= 0) {
                 star.style.position = 'relative';
-                star.appendChild(
-                    div({class: 'position'}, text(pos2+1))
-                )
+                if (!star2?.gaveUp) {
+                    star.appendChild(
+                        div({class: 'position'}, text(pos2+1))
+                    )
+                }
             }
             return star;
         })
@@ -388,7 +390,7 @@ function removeChildren(el) {
 
 function starTrophy(star, props) {
     if (!star) return div({class: 'trophy'});
-    if (star.gaveUp) return div({class: 'trophy'}, text('DNF'));
+    if (star.gaveUp) return div({class: 'trophy dnf'}, text('DNF'));
     return trophy(star.position, props);
 }
 
