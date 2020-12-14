@@ -280,7 +280,7 @@ function buildMedalGrid(members) {
 }
 
 function medalsForDay(day, position) {
-    return isPosition(day.star1, position) ? 1 : 0 + isPosition(day.star2, position) ? 1 : 0
+    return (isPosition(day.star1, position) ? 1 : 0) + (isPosition(day.star2, position) ? 1 : 0)
 }
 function isPosition(star, target) {
     return star?.position === target;
