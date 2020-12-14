@@ -39,16 +39,22 @@ function populatePositions(members) {
     range(25).forEach(day => {
         const data1 = [...members]
             .sort(membersByStar(day, 1));
+
         const data2 = [...members]
             .sort(membersByStar(day, 2));
 
+        let pos = 0;
         for(i = 0; i < data1.length; i++) {
-            if (data1[i].days[day].star1)
-                data1[i].days[day].star1.position = i;
+            const star = data1[i].days[day].star1;
+            if (star)
+                star.position = star.gaveUp ? (100 + i) : pos++;
         }
+        pos = 0;
         for(i = 0; i < data2.length; i++) {
-            if (data2[i].days[day].star2)
-                data2[i].days[day].star2.position = i;
+            const star = data2[i].days[day].star2;
+            if (star) {
+                star.position = star.gaveUp ? (100 + i) : pos++;
+            }
         }
     })
 }
@@ -61,7 +67,6 @@ function calculateLocalScore(members) {
                 ? 0
                 : members.length - (star?.position ?? 0);
 
-        console.log(members);
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
         range(25).forEach(day => {
@@ -74,8 +79,8 @@ function calculateLocalScore(members) {
 
 function membersByStar(day, star) {
     return (l, r) => {
-        const left = l.days[day][`star${star}`]?.duration ?? Number.MAX_SAFE_INTEGER;
-        const right = r.days[day][`star${star}`]?.duration ?? Number.MAX_SAFE_INTEGER;
+        const left = starDuration(l.days[day][`star${star}`]);
+        const right = starDuration(r.days[day][`star${star}`]);
         return left - right;
     }
 }
@@ -261,7 +266,6 @@ function buildMedalGrid(members) {
         el.appendChild(
             div({class: 'score', style: 'grid-column: 1'}, text(member.score))
         )
-
 
         const medals = member.days.reduce((acc, day) => {
             acc.gold += medalsForDay(day, 0);
