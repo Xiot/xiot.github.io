@@ -134,24 +134,30 @@ function initialize(data) {
             div({class: 'day link value', onclick: () => showStatsForDay(day)}, (day.day + 1).toString()),
             div({class: 'name value'}, winner.name),
             div({class: 'time value'}, formatStarTime(winner.star1)),
-            trophy(getPosition(day, 1, winner.star1)),
+            starTrophy(winner.star1),
             div({class: 'time value'}, formatStarTime(winner.star2)),
-            trophy(getPosition(day, 2, winner.star2)),
+            starTrophy(winner.star2),
         ]);
     });
 }
 
-function getPosition(day, star, ts) {
-    if (!ts) { return -1;}
+function getPosition(day, starIndex, star) {
+    if (!star) { return -1;}
+    if (star.gaveUp) { return -2; }
 
     const sorted = [...day.scores]
         .map(member => {
-            if (!member[`star${star}`]) return Number.MAX_SAFE_INTEGER;
-            return member[`star${star}`].duration;
+            return starDuration(member[`star${starIndex}`])
         })
     .sort((l, r) => l - r);
 
-    return sorted.indexOf(ts.duration);
+    return sorted.indexOf(star.duration);
+}
+
+function starDuration(star) {
+    if (!star) return Number.MAX_SAFE_INTEGER;
+    if (star.gaveUp) return Number.MAX_SAFE_INTEGER;
+    return star.duration;
 }
 
 function showStatsForDay(day) {
@@ -164,18 +170,14 @@ function showStatsForDay(day) {
 
     const sorted = [...day.scores].sort((l, r) => {
 
-        const {
-            star1: l1 = {duration: Number.MAX_SAFE_INTEGER},
-            star2: l2 = {duration: Number.MAX_SAFE_INTEGER}
-        } = l;
-        const {
-            star1: r1 = {duration: Number.MAX_SAFE_INTEGER},
-            star2: r2 = {duration: Number.MAX_SAFE_INTEGER}
-        } = r;
+        const l1 = starDuration(l.star1);
+        const l2 = starDuration(l.star2);
+        const r1 = starDuration(r.star1);
+        const r2 = starDuration(r.star2);
 
-        return r2.duration === l2.duration
-            ? l1.duration - r1.duration
-            : l2.duration - r2.duration;
+        return r2 === l2
+            ? l1 - r1
+            : l2 - r2;
     });
 
     sorted.forEach((user, index) => {
@@ -183,9 +185,9 @@ function showStatsForDay(day) {
             div({class: 'day value'}, (index + 1).toString()),
             div({class: 'name value'}, user.name),
             div({class: 'time value'}, formatStarTime(user.star1)),
-            trophy(getPosition(day, 1, user.star1)),
+            starTrophy(user.star1),
             div({class: 'time value'}, formatStarTime(user.star2)),
-            trophy(getPosition(day, 2, user.star2)),
+            starTrophy(user.star2)
         ]);
     });
 }
@@ -276,6 +278,7 @@ function buildMedalGrid(members) {
     }
     return el;
 }
+
 function medalsForDay(day, position) {
     return isPosition(day.star1, position) ? 1 : 0 + isPosition(day.star2, position) ? 1 : 0
 }
@@ -299,10 +302,6 @@ function range(to) {
 }
 
 function getStarTimestamp(member, day, star) {
-    if (didGiveUp(member, day, star)) {
-        return undefined;
-    }
-
     const text = get(member, ['completion_day_level', day, star, 'get_star_ts']);
     return text ? parseInt(text, 10) * 1000 : undefined;
 }
@@ -387,7 +386,15 @@ function removeChildren(el) {
         el.removeChild(el.lastChild);
 }
 
+function starTrophy(star, props) {
+    if (!star) return div({class: 'trophy'});
+    if (star.gaveUp) return div({class: 'trophy'}, text('DNF'));
+    return trophy(star.position, props);
+}
+
 function trophy(position, props) {
+    if (position === -1) return div({class: 'trophy'});
+    if (position === -2) return div({class: 'trophy'}, text('DNF'));
     if (position < 0 || position > 2) return div({class: 'trophy'});
     const classes = ['gold', 'silver', 'bronze'];
     const className = classes[position];
