@@ -54,12 +54,19 @@ function populatePositions(members) {
 }
 
 function calculateLocalScore(members) {
-    const positionScore = pos => pos == null ? 0 : members.length - pos;
+    const positionScore = star =>
+        star == null
+            ? 0
+            : star.gaveUp
+                ? 0
+                : members.length - (star?.position ?? 0);
+
+        console.log(members);
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
         range(25).forEach(day => {
-            sum += positionScore(members[i].days[day].star1?.position)
-            sum += positionScore(members[i].days[day].star2?.position)
+            sum += positionScore(members[i].days[day].star1)
+            sum += positionScore(members[i].days[day].star2)
         })
         members[i].score = sum;
     }
