@@ -135,12 +135,13 @@ section {
 }
 
 .trophy div {
-  display: 'flex';
+  display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+  font-size: 0.7em;
   position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
+  left: -2px; right: 0; top: 0; bottom: 0;
   color: black;
   padding-top: 2px
 }

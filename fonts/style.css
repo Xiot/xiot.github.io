@@ -25,8 +25,8 @@
 
 
     @font-face {
-    font-family: 'Uber Move Text Bold';
+    font-family: 'UberMoveText';
     font-style: normal;
-    font-weight: normal;
+    font-weight: bold;
     src: local('Uber Move Text Bold'), url('UberMoveTextBold.woff') format('woff');
     }
