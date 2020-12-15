@@ -139,7 +139,8 @@ section {
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 0.7em;
+  font-size: 0.8em;
+  text-shadow: 0 0 1px white;
   position: absolute;
   left: -2px; right: 0; top: 0; bottom: 0;
   color: black;
