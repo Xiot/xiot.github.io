@@ -1,6 +1,23 @@
+@import './fonts/style.css';
+
+body {
+  font-family: 'UberMoveText';
+}
+
 section {
   margin-bottom: 2em;
   font-size: 1em;
+}
+
+#page-header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 32px;
+}
+
+#page-header h1 {
+  display: inline-block;
 }
 
 .rank-grid {
@@ -143,4 +160,8 @@ i.trophy svg {
 
 .bronze {
   color: #cd7f32;
+}
+
+.name {
+  font-weight: bold;
 }

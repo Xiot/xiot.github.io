@@ -123,7 +123,7 @@ function buildMemberDayStats(member, day) {
 function initialize(data) {
 
     const members = transformData(data);
-
+console.log(members);
     document.getElementById('medals').appendChild(
         buildMedalGrid(members)
     )
