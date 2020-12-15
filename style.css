@@ -30,7 +30,7 @@ section {
 
 .medal-grid {
   display: grid;
-  grid-template-columns: [start] 2em repeat(3, auto) [name] 10em repeat(25, auto) minmax(0, 1fr) [end];
+  grid-template-columns: [start] auto repeat(3, auto) [name] 10em repeat(25, auto) minmax(0, 1fr) [end];
   grid-auto-rows: auto;
   gap: 8px 8px;
 }
@@ -64,6 +64,10 @@ section {
   justify-self: center;
   cursor: pointer;
   text-decoration: underline;
+}
+.medal-grid .score {
+  justify-self: end;
+  padding-left: 8px;
 }
 
 @media (max-width: 800px) {
