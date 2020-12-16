@@ -115,6 +115,7 @@ function buildMemberDayStats(member, day) {
     }
 
     return {
+        day,
         star1: buildStar(star1Timestamp, startTime, 1),
         star2: buildStar(star2Timestamp, startTime, 2),
     }
@@ -123,7 +124,6 @@ function buildMemberDayStats(member, day) {
 function initialize(data) {
 
     const members = transformData(data);
-console.log(members);
     document.getElementById('medals').appendChild(
         buildMedalGrid(members)
     )
@@ -415,7 +415,7 @@ function trophy(position, props) {
     const {class: additionalClasses, ...otherProps} = props ?? {};
 
     const el = node('i', {
-        class: `trophy ${className} ${additionalClasses}`,
+        class: `trophy ${className} ${additionalClasses ?? ''}`,
         ...otherProps
     }, trophySvg.cloneNode(true))
     return el;
