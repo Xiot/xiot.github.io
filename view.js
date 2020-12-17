@@ -210,6 +210,8 @@ function fastestScore(scores, star) {
     }
     const key = `star${star}`;
     return scores.reduce((fastest, score) => {
+        if (!fastest[key] && score[key]) {return score; }
+        if (!score[key]) { return fastest; }
         if (score[key] && fastest[key].duration > score[key].duration) {
             return score;
         }
