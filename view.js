@@ -134,6 +134,61 @@ const colors = [
 
 const last = arr => arr[arr.length -1];
 
+let activeChart = undefined;
+
+function minOf(arr, accessor = x => x) {
+    return arr.reduce((min, current) => {
+
+        const value = accessor(current);
+        if (value === undefined) return min;
+        if (!min || min.value > value) {
+            return {value, item: current}
+        }
+        return min;
+    }, undefined)?.value;
+}
+
+function buildDifferenceChart(el, members) {
+    const ctx = el.getContext('2d');
+
+    const getPoints = member => member.days.reduce((acc, day) => {
+        if (acc === undefined) {
+            return [day.score ? day.score : undefined];
+        } else {
+            const previousScore = last(acc.filter(Boolean));
+            return [...acc, day.score && previousScore ? previousScore + day.score : undefined];
+        }
+    }, undefined);
+
+    const allPoints = members.map(x => getPoints(x));
+    const minOfDay = range(25).map(i => {
+        return minOf(allPoints.map(p => p[i]));
+    });
+
+    activeChart && activeChart.destroy();
+    activeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: members.map((m,i) => {
+                const data = getPoints(m).map((value, index) => {
+                    const min = minOfDay[index];
+                    if (min === undefined) { return undefined; }
+                    return value - min;
+                });
+                return {
+                    label: m.name,
+                    data: data,
+                    fill: false,
+                    borderColor: colors[i],
+                    lineTension: 0
+                }
+            })
+        },
+        options: {maintainAspectRatio: false}
+    })
+}
+
 function buildRankChart(el, members) {
     const ctx = el.getContext('2d');
 
@@ -176,17 +231,19 @@ function buildRankChart(el, members) {
         }
     })
 
-    const chart = new Chart(ctx, {
+    activeChart && activeChart.destroy();
+    activeChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
             datasets: positions.map((m,i) => {
-                // const data = getPoints(m);
                 return {
                     label: m.member.name,
                     data: m.positions,
                     fill: false,
                     borderColor: colors[i],
+                    // cubicInterpolationMode: 'monotone',
+                    lineTension: 0
                 }
             })
         },
@@ -206,7 +263,8 @@ function buildPointChart(el, members) {
         }
     },undefined)
 
-    const chart = new Chart(ctx, {
+    activeChart && activeChart.destroy();
+    activeChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
@@ -217,6 +275,8 @@ function buildPointChart(el, members) {
                     data,
                     fill: false,
                     borderColor: colors[i],
+                    // cubicInterpolationMode: 'monotone',
+                    lineTension: 0
                 }
             })
         },
@@ -230,14 +290,18 @@ function initialize(data) {
     document.getElementById('medals').appendChild(
         buildMedalGrid(members)
     )
-    const chartEl = document.getElementById('rank-chart')
+
     document.getElementById("show-point-chart").onclick = function() {
         buildPointChart(document.getElementById('rank-chart'), members);
     }
     document.getElementById("show-rank-chart").onclick = function() {
         buildRankChart(document.getElementById('rank-chart'), members);
     }
+    document.getElementById("show-difference-chart").onclick = function() {
+        buildDifferenceChart(document.getElementById('rank-chart'), members);
+    }
 
+    const chartEl = document.getElementById('rank-chart')
     buildPointChart(chartEl, members);
 
     const grid = document.getElementById('ranking-grid');
