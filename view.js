@@ -144,6 +144,66 @@ function buildRankChart(el, members) {
             const previousScore = last(acc.filter(Boolean)) ?? 0;
             return [...acc, day.score ? previousScore + day.score : undefined]
         }
+    }, undefined);
+
+    const memberPoints = members.map(m => {
+        return {
+            member: m,
+            points: getPoints(m)
+        }
+    });
+
+    const pointsPerDay = range(25).map(i => {
+        return memberPoints.map(x => x.points[i]).sort((l, r) => r - l);
+    })
+    const positions = memberPoints.map((mp, i) => {
+        const member = mp.member;
+        const points = memberPoints.find(x => x.member === mp.member).points;
+
+        const d = range(25).map(d => {
+            const value = points[d];
+            if (value === undefined) {
+                return undefined;
+            }
+            const day = pointsPerDay[d];
+            return members.length - day.indexOf(value);
+
+        })
+
+        return {
+            member: mp.member,
+            positions: d,
+        }
+    })
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: positions.map((m,i) => {
+                // const data = getPoints(m);
+                return {
+                    label: m.member.name,
+                    data: m.positions,
+                    fill: false,
+                    borderColor: colors[i],
+                }
+            })
+        },
+        options: {maintainAspectRatio: false,}
+    })
+}
+
+function buildPointChart(el, members) {
+    const ctx = el.getContext('2d');
+
+    const getPoints = member => member.days.reduce((acc, day) => {
+        if (acc === undefined) {
+            return [day.score];
+        } else {
+            const previousScore = last(acc.filter(Boolean)) ?? 0;
+            return [...acc, day.score ? previousScore + day.score : undefined]
+        }
     },undefined)
 
     const chart = new Chart(ctx, {
@@ -160,7 +220,7 @@ function buildRankChart(el, members) {
                 }
             })
         },
-        options: {maintainAspectRatio: false,}
+        options: {maintainAspectRatio: false}
     })
 }
 
@@ -170,7 +230,11 @@ function initialize(data) {
     document.getElementById('medals').appendChild(
         buildMedalGrid(members)
     )
-    buildRankChart(document.getElementById('rank-chart'), members)
+    const chartEl = document.getElementById('rank-chart')
+    document.getElementById("show-point-chart").onclick = () => buildPointChart(chartEl, members);
+    document.getElementById("show-rank-chart").onclick = () => buildRankChart(chartEl, members)
+
+    buildPointChart(chartEl, members);
 
     const grid = document.getElementById('ranking-grid');
     const days = dataByDay(members);
