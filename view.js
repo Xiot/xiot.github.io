@@ -30,7 +30,7 @@ function transformData(input) {
     calculateLocalScore(members);
 
     members.sort(membersByTotalScore);
-console.log(members);
+
     return members;
 }
 
@@ -155,8 +155,9 @@ function minOf(arr, accessor = x => x) {
 
 function buildDifferenceChart(el, members) {
     const ctx = el.getContext('2d');
+    const localMembers = members.slice(0, 4);
 
-    const allPoints = members.map(x => getPoints(x));
+    const allPoints = localMembers.map(x => getPoints(x));
     const minOfDay = range(25).map(i => {
         return minOf(allPoints.map(p => p[i]));
     });
@@ -166,7 +167,7 @@ function buildDifferenceChart(el, members) {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
-            datasets: members.map((m,i) => {
+            datasets: localMembers.map((m,i) => {
                 const data = getPoints(m).map((value, index) => {
                     const min = minOfDay[index];
                     if (min === undefined) { return undefined; }
