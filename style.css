@@ -193,3 +193,14 @@ i.trophy svg {
   margin-right: 4px;
   padding-top: 16px;
 }
+
+#rank-chart-container {
+  position: relative;
+  height: 40vh;
+  width: 100%;
+  margin-top: 16px;
+}
+
+canvas {
+  /* border: 1px solid black; */
+}

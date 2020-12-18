@@ -70,8 +70,10 @@ function calculateLocalScore(members) {
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
         range(25).forEach(day => {
-            sum += positionScore(members[i].days[day].star1)
-            sum += positionScore(members[i].days[day].star2)
+            const star1 = positionScore(members[i].days[day].star1);
+            const star2 = positionScore(members[i].days[day].star2);
+            sum += star1 + star2;
+            members[i].days[day].score = star1 + star2;
         })
         members[i].score = sum;
     }
@@ -121,12 +123,53 @@ function buildMemberDayStats(member, day) {
     }
 }
 
+const colors = [
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)'
+];
+
+
+function buildRankChart(el, members) {
+    const ctx = el.getContext('2d');
+
+    const getPoints = member => member.days.reduce((acc, day) => {
+        if (acc === undefined) {
+            return [day.score];
+        } else {
+            return [...acc, acc[acc.length - 1] + day.score]
+        }
+    },undefined)
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: members.map((m,i) => {
+                const data = getPoints(m);
+                console.log(m.name, data);
+                return {
+                    label: m.name,
+                    data,
+                    fill: false,
+                    borderColor: colors[i],
+                }
+            })
+        },
+        options: {maintainAspectRatio: false,}
+    })
+}
+
 function initialize(data) {
 
     const members = transformData(data);
     document.getElementById('medals').appendChild(
         buildMedalGrid(members)
     )
+    buildRankChart(document.getElementById('rank-chart'), members)
 
     const grid = document.getElementById('ranking-grid');
     const days = dataByDay(members);

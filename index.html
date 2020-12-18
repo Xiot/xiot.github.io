@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="./style.css" />
     <link rel="icon" type="image/png" href="./images/toronto-racoon-black-32-filled.png" />
     <script src="https://moment.github.io/luxon/global/luxon.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" type="text/javascript"></script>
     <script src="./view.js" type="text/javascript"></script>
   </head>
   <body id="root">
@@ -13,7 +14,11 @@
       <h1>Advent of Code - 2020</h1>
     </div>
     <div id="container">
-    <section id='medals'>
+    <section id='medals-section'>
+      <div id="medals"></div>
+      <div id="rank-chart-container" style="position:relative;height:300px">
+        <canvas id="rank-chart"></canvas>
+      </div>
     </section>
     <section id="overall">
       <div id="ranking-grid" class="rank-grid"></div>
