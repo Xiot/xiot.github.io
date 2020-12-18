@@ -29,8 +29,6 @@ function transformData(input) {
     populatePositions(members);
     calculateLocalScore(members);
 
-    members.sort(membersByTotalScore);
-
     return members;
 }
 
@@ -155,9 +153,8 @@ function minOf(arr, accessor = x => x) {
 
 function buildDifferenceChart(el, members) {
     const ctx = el.getContext('2d');
-    const localMembers = members.slice(0, 4);
 
-    const allPoints = localMembers.map(x => getPoints(x));
+    const allPoints = members.map(x => getPoints(x));
     const minOfDay = range(25).map(i => {
         return minOf(allPoints.map(p => p[i]));
     });
@@ -167,12 +164,14 @@ function buildDifferenceChart(el, members) {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
-            datasets: localMembers.map((m,i) => {
-                const data = getPoints(m).map((value, index) => {
-                    const min = minOfDay[index];
-                    if (min === undefined) { return undefined; }
-                    return value - min;
-                });
+            datasets: members.map((m,i) => {
+                const data = m.score > 50
+                    ? getPoints(m).map((value, index) => {
+                        const min = minOfDay[index];
+                        if (min === undefined) { return undefined; }
+                        return value - min;
+                    })
+                    : [];
                 return {
                     label: m.name,
                     data: data,
@@ -397,6 +396,7 @@ function fastestScore(scores, star) {
 
 function buildMedalGrid(members) {
     const el = div({class: 'medal-grid'});
+    members = [...members].sort(membersByTotalScore);
 
     const days = dataByDay(members);
 
