@@ -140,7 +140,7 @@ function buildRankChart(el, members) {
         if (acc === undefined) {
             return [day.score];
         } else {
-            return [...acc, acc[acc.length - 1] + day.score]
+            return [...acc, day.score ? acc[acc.length - 1] + day.score : undefined]
         }
     },undefined)
 
