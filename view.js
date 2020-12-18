@@ -132,6 +132,7 @@ const colors = [
     'rgba(255, 159, 64, 1)'
 ];
 
+const last = arr => arr[arr.length -1];
 
 function buildRankChart(el, members) {
     const ctx = el.getContext('2d');
@@ -140,7 +141,8 @@ function buildRankChart(el, members) {
         if (acc === undefined) {
             return [day.score];
         } else {
-            return [...acc, day.score ? acc[acc.length - 1] + day.score : undefined]
+            const previousScore = last(acc.filter(Boolean)) ?? 0;
+            return [...acc, day.score ? previousScore + day.score : undefined]
         }
     },undefined)
 
