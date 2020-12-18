@@ -30,7 +30,7 @@ function transformData(input) {
     calculateLocalScore(members);
 
     members.sort(membersByTotalScore);
-
+console.log(members);
     return members;
 }
 
@@ -69,13 +69,18 @@ function calculateLocalScore(members) {
 
     for (let i = 0; i < members.length; i++) {
         let sum = 0;
+        let lastCompleted = -1;
         range(25).forEach(day => {
             const star1 = positionScore(members[i].days[day].star1);
             const star2 = positionScore(members[i].days[day].star2);
             sum += star1 + star2;
             members[i].days[day].score = star1 + star2;
+            if (star1 || star2) {
+                lastCompleted = day;
+            }
         })
         members[i].score = sum;
+        members[i].lastAttempted = lastCompleted;
     }
 }
 
@@ -151,15 +156,6 @@ function minOf(arr, accessor = x => x) {
 function buildDifferenceChart(el, members) {
     const ctx = el.getContext('2d');
 
-    const getPoints = member => member.days.reduce((acc, day) => {
-        if (acc === undefined) {
-            return [day.score ? day.score : undefined];
-        } else {
-            const previousScore = last(acc.filter(Boolean));
-            return [...acc, day.score && previousScore ? previousScore + day.score : undefined];
-        }
-    }, undefined);
-
     const allPoints = members.map(x => getPoints(x));
     const minOfDay = range(25).map(i => {
         return minOf(allPoints.map(p => p[i]));
@@ -191,15 +187,6 @@ function buildDifferenceChart(el, members) {
 
 function buildRankChart(el, members) {
     const ctx = el.getContext('2d');
-
-    const getPoints = member => member.days.reduce((acc, day) => {
-        if (acc === undefined) {
-            return [day.score];
-        } else {
-            const previousScore = last(acc.filter(Boolean)) ?? 0;
-            return [...acc, day.score ? previousScore + day.score : undefined]
-        }
-    }, undefined);
 
     const memberPoints = members.map(m => {
         return {
@@ -243,25 +230,22 @@ function buildRankChart(el, members) {
                     fill: false,
                     borderColor: colors[i],
                     // cubicInterpolationMode: 'monotone',
-                    lineTension: 0
+                    lineTension: 0,
+                    spanGaps: true
                 }
             })
         },
-        options: {maintainAspectRatio: false,}
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{display: false}]
+            }
+        }
     })
 }
 
 function buildPointChart(el, members) {
     const ctx = el.getContext('2d');
-
-    const getPoints = member => member.days.reduce((acc, day) => {
-        if (acc === undefined) {
-            return [day.score];
-        } else {
-            const previousScore = last(acc.filter(Boolean)) ?? 0;
-            return [...acc, day.score ? previousScore + day.score : undefined]
-        }
-    },undefined)
 
     activeChart && activeChart.destroy();
     activeChart = new Chart(ctx, {
@@ -276,13 +260,28 @@ function buildPointChart(el, members) {
                     fill: false,
                     borderColor: colors[i],
                     // cubicInterpolationMode: 'monotone',
-                    lineTension: 0
+                    lineTension: 0,
+                    spanGaps: true
                 }
             })
         },
         options: {maintainAspectRatio: false}
     })
 }
+
+const getPoints = member => member.days.reduce((acc, day) => {
+    if (acc === undefined) {
+        return [day.score];
+    } else {
+        const previousScore = last(acc.filter(Boolean));
+        const score = day.score
+            ? day.score
+            : day.day <= member.lastAttempted
+                ? 0
+                : undefined;
+        return [...acc, (score != null && previousScore) ? previousScore + score : undefined];
+    }
+}, undefined)
 
 function initialize(data) {
 
