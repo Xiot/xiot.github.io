@@ -151,7 +151,7 @@ function buildRankChart(el, members) {
         data: {
             labels: range(25).map(x => String(x + 1)),
             datasets: members.map((m,i) => {
-                console.log(m.name, data);
+                const data = getPoints(m);
                 return {
                     label: m.name,
                     data,
