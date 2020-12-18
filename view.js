@@ -231,8 +231,12 @@ function initialize(data) {
         buildMedalGrid(members)
     )
     const chartEl = document.getElementById('rank-chart')
-    document.getElementById("show-point-chart").onclick = () => buildPointChart(chartEl, members);
-    document.getElementById("show-rank-chart").onclick = () => buildRankChart(chartEl, members)
+    document.getElementById("show-point-chart").onclick = function() {
+        buildPointChart(document.getElementById('rank-chart'), members);
+    }
+    document.getElementById("show-rank-chart").onclick = function() {
+        buildRankChart(document.getElementById('rank-chart'), members);
+    }
 
     buildPointChart(chartEl, members);
 
