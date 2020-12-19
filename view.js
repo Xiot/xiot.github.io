@@ -154,7 +154,9 @@ function minOf(arr, accessor = x => x) {
 function buildDifferenceChart(el, members) {
     const ctx = el.getContext('2d');
 
-    const allPoints = members.map(x => getPoints(x));
+    const isActiveMember = member => member.score > 50;
+
+    const allPoints = members.filter(isActiveMember).map(x => getPoints(x));
     const minOfDay = range(25).map(i => {
         return minOf(allPoints.map(p => p[i]));
     });
@@ -165,7 +167,7 @@ function buildDifferenceChart(el, members) {
         data: {
             labels: range(25).map(x => String(x + 1)),
             datasets: members.map((m,i) => {
-                const data = m.score > 50
+                const data = isActiveMember(m)
                     ? getPoints(m).map((value, index) => {
                         const min = minOfDay[index];
                         if (min === undefined) { return undefined; }
