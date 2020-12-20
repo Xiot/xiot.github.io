@@ -193,7 +193,7 @@ function buildRankChart(el, members) {
     const memberPoints = members.map(m => {
         return {
             member: m,
-            points: getPoints(m)
+            points: getPoints(m, {allowEmpty: true})
         }
     });
 
@@ -271,7 +271,8 @@ function buildPointChart(el, members) {
     })
 }
 
-const getPoints = member => member.days.reduce((acc, day) => {
+const getPoints = (member, opts) => member.days.reduce((acc, day) => {
+    const {allowEmpty = false} = (opts ?? {});
     if (acc === undefined) {
         return [day.score];
     } else {
@@ -280,7 +281,7 @@ const getPoints = member => member.days.reduce((acc, day) => {
             ? day.score
             : day.day <= member.lastAttempted
                 ? 0
-                : undefined;
+                : allowEmpty ? 0 : undefined;
         return [...acc, (score != null && previousScore) ? previousScore + score : undefined];
     }
 }, undefined)
