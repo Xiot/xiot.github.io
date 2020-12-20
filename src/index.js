@@ -1,9 +1,11 @@
 /* eslint-env browser */
 
-const {DateTime, Duration} = luxon;
+import {DateTime, Duration} from 'luxon';
+import {Chart} from 'chart.js';
 
 const PARSE_TIME = Date.now();
 
+import {stats} from 'https://portal.xiot.ca/aoc-2020.js'
 const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
 const statsJsonUri = 'https://portal.xiot.ca/aoc-2020.json';
 const trophySvg = createTrophy();
@@ -12,16 +14,29 @@ const startOffset = (9 * 60 + 30) * 60 * 1000;
 
 window.onload = load;
 
+// if (import.meta.hot) {
+//     console.log('in hot', import.meta.hot, import.meta.hot.isLocked);
+//     import.meta.hot.accept(args => {
+//         console.log('a', args);
+//         initialize(stats);
+//     });
+// }
+
+// let dataFetch = fetch(statsJsonUri)
+//                 .catch(ex => fetch(statsJsonUriLocal))
+
 function load() {
 
     if (window.outerWidth < 800) {
         document.getElementById('root').classList.add('phone')
     }
 
-    fetch(statsJsonUri)
-        .catch(ex => fetch(statsJsonUriLocal))
-        .then(x => x.json())
-        .then(data => initialize(data));
+    // fetch(statsJsonUri)
+    //     .catch(ex => fetch(statsJsonUriLocal))
+    // dataFetch
+    //     .then(x => x.json())
+    //     .then(data => initialize(data));
+    initialize(stats);
 }
 
 function transformData(input) {

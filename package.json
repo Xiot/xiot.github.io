@@ -1,0 +1,25 @@
+{
+  "name": "xiot.github.io",
+  "version": "1.0.0",
+  "description": "Advent of Code site",
+  "main": "index.js",
+  "repository": "https://github.com/Xiot/xiot.github.io.git",
+  "author": "Chris Thomas <tchrs@uber.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf ./dist/*",
+    "build": "snowpack build",
+    "dev": "snowpack dev",
+    "build-ws": "esbuild ./view.js --sourcemap --format=esm --target=chrome87 --outdir=./dist --metafile=./dist/meta.json",
+    "dev-wds": "web-dev-server --config ./.dev-server.mjs",
+    "local-certs": "npx devcert-cli generate localhost && mv localhost.key snowpack.key && mv localhost.cert snowpack.crt"
+  },
+  "dependencies": {
+    "chart.js": "^2.9.4",
+    "luxon": "^1.25.0"
+  },
+  "devDependencies": {
+    "snowpack": "^2.18.5"
+  }
+}
