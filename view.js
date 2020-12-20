@@ -386,15 +386,21 @@ function fastestScore(scores, star) {
     if (scores.length === 0) {
         return null;
     }
-    const key = `star${star}`;
-    return scores.reduce((fastest, score) => {
-        if (!fastest[key] && score[key]) {return score; }
-        if (!score[key]) { return fastest; }
-        if (score[key] && fastest[key].duration > score[key].duration) {
-            return score;
+    const sorted = [...scores].sort((l, r) => {
+
+        const l1 = starDuration(l.star1);
+        const l2 = starDuration(l.star2);
+        const r1 = starDuration(r.star1);
+        const r2 = starDuration(r.star2);
+
+        if (star === 2) {
+            return r2 === l2
+                ? l1 - r1
+                : l2 - r2;
         }
-        return fastest;
+        return l1 - r1;
     });
+    return sorted[0];
 }
 
 function buildMedalGrid(members) {
