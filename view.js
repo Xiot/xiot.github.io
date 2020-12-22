@@ -271,6 +271,35 @@ function buildPointChart(el, members) {
     })
 }
 
+function buildAveragePointsChart(el, members) {
+    const ctx = el.getContext('2d');
+
+    activeChart && activeChart.destroy();
+    const allPoints = members
+        .map(x => getPoints(x, {allowEmpty: false}))
+        .map((points, i) => points.map((p, i) => p / (i+1)));
+
+    activeChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: members.map((m,i) => {
+                const data = allPoints[i];
+                return {
+                    label: m.name,
+                    data,
+                    fill: false,
+                    borderColor: colors[i],
+                    // cubicInterpolationMode: 'monotone',
+                    lineTension: 0,
+                    spanGaps: true
+                }
+            })
+        },
+        options: {maintainAspectRatio: false}
+    })
+}
+
 const getPoints = (member, opts) => member.days.reduce((acc, day) => {
     const {allowEmpty = false} = (opts ?? {});
     if (acc === undefined) {
@@ -301,6 +330,9 @@ function initialize(data) {
     }
     document.getElementById("show-difference-chart").onclick = function() {
         buildDifferenceChart(document.getElementById('rank-chart'), members);
+    }
+    document.getElementById('show-average-points-chart').onclick= function() {
+        buildAveragePointsChart(document.getElementById('rank-chart'), members);
     }
 
     const chartEl = document.getElementById('rank-chart')
