@@ -156,7 +156,7 @@ function buildDifferenceChart(el, members) {
 
     const isActiveMember = member => member.score > 50;
 
-    const allPoints = members.filter(isActiveMember).map(x => getPoints(x));
+    const allPoints = members.filter(isActiveMember).map(x => getPoints(x, {allowEmpty: true}));
     const minOfDay = range(25).map(i => {
         return minOf(allPoints.map(p => p[i]));
     });
