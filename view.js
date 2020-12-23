@@ -152,7 +152,6 @@ function minOf(arr, accessor = x => x) {
 }
 
 function buildDifferenceChart(el, members) {
-    const ctx = el.getContext('2d');
 
     const isActiveMember = member => member.score > 50;
 
@@ -161,8 +160,7 @@ function buildDifferenceChart(el, members) {
         return minOf(allPoints.map(p => p[i]));
     });
 
-    activeChart && activeChart.destroy();
-    activeChart = new Chart(ctx, {
+    createChart('Point Differrence', {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
@@ -188,7 +186,6 @@ function buildDifferenceChart(el, members) {
 }
 
 function buildRankChart(el, members) {
-    const ctx = el.getContext('2d');
 
     const memberPoints = members.map(m => {
         return {
@@ -220,8 +217,7 @@ function buildRankChart(el, members) {
         }
     })
 
-    activeChart && activeChart.destroy();
-    activeChart = new Chart(ctx, {
+    createChart('Rank', {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
@@ -231,26 +227,27 @@ function buildRankChart(el, members) {
                     data: m.positions,
                     fill: false,
                     borderColor: colors[i],
-                    // cubicInterpolationMode: 'monotone',
                     lineTension: 0,
                     spanGaps: true
                 }
-            })
+            }),
         },
         options: {
-            maintainAspectRatio: false,
             scales: {
-                yAxes: [{display: false}]
+                yAxes: [{
+                    display: false,
+                    ticks: {
+                        stepSize: 1,
+                    }
+                }]
             }
         }
     })
 }
 
 function buildPointChart(el, members) {
-    const ctx = el.getContext('2d');
 
-    activeChart && activeChart.destroy();
-    activeChart = new Chart(ctx, {
+    createChart('Points', {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
@@ -261,25 +258,75 @@ function buildPointChart(el, members) {
                     data,
                     fill: false,
                     borderColor: colors[i],
-                    // cubicInterpolationMode: 'monotone',
                     lineTension: 0,
                     spanGaps: true
                 }
             })
         },
-        options: {maintainAspectRatio: false}
     })
 }
 
-function buildAveragePointsChart(el, members) {
-    const ctx = el.getContext('2d');
-
+function createChart(title, config) {
+    const ctx = document.getElementById('rank-chart').getContext('2d');
     activeChart && activeChart.destroy();
+
+    return activeChart = new Chart(ctx, {
+        ...config,
+        options: {
+            animation: null,
+            maintainAspectRatio: false,
+            title: {display: true, text: title, padding: 20},
+            legend: {display: true, position: 'left'},
+            ...config.options
+        }
+    })
+}
+
+function buildRollingAverageChart(el, members) {
+
+    const AVG_SIZE = 5;
+
+    const allPoints = members
+        .map(m => getDayPoints(m))
+        .map(points => range(25).map(day => points[day] == null ? undefined : avgLast(points, day, AVG_SIZE)));
+
+    createChart(`${AVG_SIZE} Day Moving Average`, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: members.map((m,i) => {
+                const data = allPoints[i];
+                return {
+                    label: m.name,
+                    data,
+                    fill: false,
+                    borderColor: colors[i],
+                    lineTension: 0,
+                    spanGaps: true
+                }
+            })
+        }
+    })
+}
+
+const avgLast = (arr, index,  count = 5) => {
+    const actualCount = index + 1 < count ? index + 1 : count;
+    if (actualCount === 0) return 0;
+    let sum = 0;
+    for(let i = index; i > index - actualCount; i--){
+        sum += arr[i] ?? 0;
+    }
+
+    return sum / actualCount;
+}
+
+function buildAveragePointsChart(el, members) {
+
     const allPoints = members
         .map(x => getPoints(x, {allowEmpty: false}))
         .map((points, i) => points.map((p, i) => p / (i+1)));
 
-    activeChart = new Chart(ctx, {
+    createChart('Average Points', {
         type: 'line',
         data: {
             labels: range(25).map(x => String(x + 1)),
@@ -295,8 +342,7 @@ function buildAveragePointsChart(el, members) {
                     spanGaps: true
                 }
             })
-        },
-        options: {maintainAspectRatio: false}
+        }
     })
 }
 
@@ -312,6 +358,22 @@ const getPoints = (member, opts) => member.days.reduce((acc, day) => {
                 ? 0
                 : allowEmpty ? 0 : undefined;
         return [...acc, (score != null && previousScore) ? previousScore + score : undefined];
+    }
+}, undefined)
+
+
+const getDayPoints = (member, opts) => member.days.reduce((acc, day) => {
+    const {allowEmpty = false} = (opts ?? {});
+    if (acc === undefined) {
+        return [day.score];
+    } else {
+        const previousScore = last(acc.filter(Boolean));
+        const score = day.score
+            ? day.score
+            : day.day <= member.lastAttempted
+                ? 0
+                : allowEmpty ? 0 : undefined;
+        return [...acc, score];
     }
 }, undefined)
 
@@ -333,6 +395,9 @@ function initialize(data) {
     }
     document.getElementById('show-average-points-chart').onclick= function() {
         buildAveragePointsChart(document.getElementById('rank-chart'), members);
+    }
+    document.getElementById('show-sliding-average-chart').onclick = function() {
+        buildRollingAverageChart(document.getElementById('rank-chart'), members);
     }
 
     const chartEl = document.getElementById('rank-chart')
