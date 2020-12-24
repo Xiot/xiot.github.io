@@ -20,12 +20,18 @@
         <canvas id="rank-chart"></canvas>
       </div>
       <div>
-        <button id="show-point-chart">by points</button>
-        <button id="show-rank-chart">by rank</button>
-        <button id="show-difference-chart">by difference</button>
-        <button id="show-average-points-chart">average points</button>
-        <button id="show-sliding-average-chart">sliding avg</button>
-        <button id="show-points-by-delta-chart">points by delta</button>
+        <div class="graph-selector">
+          <div>By Time</div>
+          <button id="show-point-chart">points</button>
+          <button id="show-rank-chart">rank</button>
+          <button id="show-difference-chart">difference</button>
+          <button id="show-average-points-chart">average points</button>
+          <button id="show-sliding-average-chart">sliding avg</button>
+        </div>
+        <div class="graph-selector">
+          <div>By Delta Time</div>
+          <button id="show-points-by-delta-chart">points</button>
+        </div>
       </div>
     </section>
     <section id="overall">

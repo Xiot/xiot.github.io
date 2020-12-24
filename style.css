@@ -205,6 +205,13 @@ i.trophy svg {
   margin-top: 16px;
 }
 
-canvas {
-  /* border: 1px solid black; */
+.graph-selector {
+  margin-bottom: 12px;
+}
+
+.graph-selector div {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
