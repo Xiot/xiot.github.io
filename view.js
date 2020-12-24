@@ -683,6 +683,7 @@ function formatStarTime(star) {
 }
 
 function formatDuration(duration) {
+    if (duration == null) return '';
     return Duration.fromMillis(duration).toFormat('hh:mm:ss');
 }
 
