@@ -219,8 +219,12 @@ i.trophy svg {
 #container {
   position: relative;
 }
+#container .spinner {
+  display: none;
+}
 
 #container.loading .spinner {
+
   position: absolute;
   top: 0;
   left: 0;
