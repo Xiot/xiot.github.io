@@ -283,7 +283,7 @@ function createChart(title, config) {
 }
 
 function buildPointsByDeltaChart(el, members) {
-    console.log(members);
+
     const delta = members.map(m => {
         return m.days.map(d => {
             const t1 = d.star1?.timestamp;
@@ -305,7 +305,10 @@ function buildPointsByDeltaChart(el, members) {
     const additive = members.map((m, memberIndex) => {
         return range(25).reduce((acc, day) => {
             const score = positions[day]?.find(x => x.memberIndex === memberIndex);
-            return [...acc, (acc[day - 1] ?? 0) + (score?.score ?? 0)]
+            const totalScore = day > m.lastAttempted
+                ? undefined
+                : (acc[day - 1] ?? 0) + (score?.score ?? 0)
+            return [...acc, totalScore]
         }, []);
     })
 
@@ -451,7 +454,7 @@ function initialize(data) {
     }
 
     const chartEl = document.getElementById('rank-chart')
-    buildPointsByDeltaChart(chartEl, members);
+    buildPointChart(chartEl, members);
 
     const grid = document.getElementById('ranking-grid');
     const days = dataByDay(members);
