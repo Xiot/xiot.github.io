@@ -282,6 +282,53 @@ function createChart(title, config) {
     })
 }
 
+function buildPointsByDeltaChart(el, members) {
+    console.log(members);
+    const delta = members.map(m => {
+        return m.days.map(d => {
+            const t1 = d.star1?.timestamp;
+            const t2 = d.star2?.timestamp;
+            return t2 ? t2 - t1 : Number.MAX_SAFE_INTEGER;
+        })
+    });
+
+    const positions = range(25).map(day => {
+        return delta
+            .map((scores, memberIndex) => ({ memberIndex, delta: scores[day]}))
+            .sort((l, r) => r.delta - l.delta)
+            .map((item, i) => ({
+                ...item,
+                score: item.delta === Number.MAX_SAFE_INTEGER ? 0 : i + 1
+            }));
+    });
+
+    const additive = members.map((m, memberIndex) => {
+        return range(25).reduce((acc, day) => {
+            const score = positions[day]?.find(x => x.memberIndex === memberIndex);
+            return [...acc, (acc[day - 1] ?? 0) + (score?.score ?? 0)]
+        }, []);
+    })
+
+    createChart(`Points by Delta`, {
+        type: 'line',
+        data: {
+            labels: range(25).map(x => String(x + 1)),
+            datasets: members.map((m,i) => {
+                const data = additive[i];
+                return {
+                    label: m.name,
+                    data,
+                    fill: false,
+                    borderColor: colors[i],
+                    lineTension: 0,
+                    spanGaps: true
+                }
+            })
+        },
+    })
+
+}
+
 function buildRollingAverageChart(el, members) {
 
     const AVG_SIZE = 5;
@@ -399,9 +446,12 @@ function initialize(data) {
     document.getElementById('show-sliding-average-chart').onclick = function() {
         buildRollingAverageChart(document.getElementById('rank-chart'), members);
     }
+    document.getElementById('show-points-by-delta-chart').onclick = function() {
+        buildPointsByDeltaChart(document.getElementById('rank-chart'), members);
+    }
 
     const chartEl = document.getElementById('rank-chart')
-    buildPointChart(chartEl, members);
+    buildPointsByDeltaChart(chartEl, members);
 
     const grid = document.getElementById('ranking-grid');
     const days = dataByDay(members);
@@ -467,6 +517,12 @@ function showStatsForDay(day) {
             : l2 - r2;
     });
 
+    const getDelta = (d) => {
+        const t1 = d.star1?.timestamp;
+        const t2 = d.star2?.timestamp;
+        return t2 ? t2 - t1 : undefined;
+    }
+
     sorted.forEach((user, index) => {
         append(el, [
             div({class: 'day value'}, (index + 1).toString()),
@@ -474,7 +530,8 @@ function showStatsForDay(day) {
             div({class: 'time value'}, formatStarTime(user.star1)),
             starTrophy(user.star1),
             div({class: 'time value'}, formatStarTime(user.star2)),
-            starTrophy(user.star2)
+            starTrophy(user.star2),
+            div({class: 'time value'}, formatDuration(getDelta(user))),
         ]);
     });
 }
@@ -619,7 +676,11 @@ function getDayStartTime(day, ts) {
 
 function formatStarTime(star) {
     if (!star || !star.duration) return '';
-    return Duration.fromMillis(star.duration).toFormat('hh:mm:ss');
+    return formatDuration(star.duration)
+}
+
+function formatDuration(duration) {
+    return Duration.fromMillis(duration).toFormat('hh:mm:ss');
 }
 
 function get(obj, keys) {

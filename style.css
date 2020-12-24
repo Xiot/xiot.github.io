@@ -28,6 +28,10 @@ section {
   align-items: center;
 }
 
+#speed-grid {
+  grid-template-columns: 2em 10em 10em 36px 10em 36px 10em;
+}
+
 .medal-grid {
   display: grid;
   grid-template-columns: [start] auto repeat(3, [medal] auto) [name] 10em repeat(25, [day] auto) minmax(0, 1fr) [end];
