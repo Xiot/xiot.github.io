@@ -2,6 +2,8 @@
 
 const {DateTime, Duration} = luxon;
 
+const PARSE_TIME = Date.now();
+
 const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io/master/2020.json';
 const statsJsonUri = 'https://portal.xiot.ca/aoc-2020.json';
 const trophySvg = createTrophy();
@@ -430,6 +432,7 @@ const getDayPoints = (member, opts) => member.days.reduce((acc, day) => {
     }
 }, undefined)
 
+
 function initialize(data) {
 
     const members = transformData(data);
@@ -483,7 +486,11 @@ function initialize(data) {
         ]);
     });
 
-    document.getElementById('container').classList.remove('loading');
+    const delay = Math.max(0, 1200 - (Date.now() - PARSE_TIME));
+
+    setTimeout(() =>
+        document.getElementById('container').classList.remove('loading')
+    , delay);
 }
 
 function getPosition(day, starIndex, star) {
