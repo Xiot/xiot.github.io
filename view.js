@@ -482,6 +482,8 @@ function initialize(data) {
             starTrophy(winner.star2),
         ]);
     });
+
+    document.getElementById('container').classList.remove('loading');
 }
 
 function getPosition(day, starIndex, star) {

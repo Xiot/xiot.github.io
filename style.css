@@ -215,3 +215,47 @@ i.trophy svg {
   margin-bottom: 6px;
   text-transform: uppercase;
 }
+
+#container {
+  position: relative;
+}
+
+#container.loading .spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100vh - 132px - 16px);
+  background-color: white;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner-container {
+  position: relative;
+}
+.spinner-container::before {
+  content: "loading"
+}
+
+#container.loading .spinner .spinner-bar {
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  margin-top: 4px;
+  background-color: black;
+  animation: bar 1.2s ease-in-out infinite;
+}
+
+@keyframes bar {
+  0% {
+    left: 0px;
+  }
+  50% {
+    left: calc(100% - 10px);
+  }
+  100% {
+    left: 0px
+  }
+}
