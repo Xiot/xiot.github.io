@@ -24,7 +24,8 @@ function load() {
 
 function transformData(input) {
     const members = Object.values(input.members)
-        .map(transformMemberData);
+        .map(transformMemberData)
+        .filter(x => x.lastAttempted >= 0);
 
     populatePositions(members);
     calculateLocalScore(members);
@@ -73,12 +74,8 @@ function calculateLocalScore(members) {
             const star2 = positionScore(members[i].days[day].star2);
             sum += star1 + star2;
             members[i].days[day].score = star1 + star2;
-            if (star1 || star2) {
-                lastCompleted = day;
-            }
         })
         members[i].score = sum;
-        members[i].lastAttempted = lastCompleted;
     }
 }
 
@@ -99,7 +96,13 @@ function transformMemberData(member) {
         name: member.name,
         days: range(25).map(index => {
             return buildMemberDayStats(member, index + 1);
-        })
+        }),
+        lastAttempted: range(25).reduce((last, day) => {
+            if (member.completion_day_level[String(day+1)]) {
+                return day;
+            }
+            return last;
+        }, -1)
     }
 }
 
