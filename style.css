@@ -34,7 +34,7 @@ section {
 
 .medal-grid {
   display: grid;
-  grid-template-columns: [start] auto repeat(3, [medal] auto) [name] 10em repeat(25, [day] auto) minmax(0, 1fr) [end];
+  grid-template-columns: [start] auto repeat(4, [medal] auto) [name] 10em repeat(25, [day] auto) minmax(0, 1fr) [end];
   grid-auto-rows: auto;
   gap: 8px 8px;
 }

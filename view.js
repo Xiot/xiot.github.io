@@ -29,12 +29,21 @@ function transformData(input) {
         .map(transformMemberData)
         .filter(x => x.lastAttempted >= 0);
 
+    applyOverrides(members);
     populatePositions(members);
     calculateLocalScore(members);
 
     return members;
 }
 
+function applyOverrides(members) {
+    members.forEach(m => {
+        const lastDay = m.days[24];
+        if (!lastDay?.star2) return;
+        lastDay.star2.timestamp = lastDay.star1.timestamp;
+        lastDay.star2.duration = 0;
+    })
+}
 function populatePositions(members) {
 
     range(25).forEach(day => {
@@ -583,6 +592,7 @@ function buildMedalGrid(members) {
         trophy(0, {class: 'header'}),
         trophy(1, {class: 'header'}),
         trophy(2, {class: 'header'}),
+        div({class: 'header'}),
         div({
             class: 'name header',
             style: 'grid-column: name;',
@@ -591,7 +601,6 @@ function buildMedalGrid(members) {
         ...days
             .map(day => div({
                 class: 'day header',
-                style: `grid-column: ${day.day+6}`,
                 onclick: () => showStatsForDay(day)
             }, text(day.day+1))),
         div({class: 'header-border'})
@@ -605,10 +614,14 @@ function buildMedalGrid(members) {
             const pos2 = star2?.position ?? -1;
 
             const star = starTrophy(star2);
-            const strokeColor = ['transparent', 'gold', 'silver', '#cd7f32'][pos1 + 1]
+            const strokeColor = ['gold', 'silver', '#cd7f32'][pos1] ?? 'transparent';
             star.style['background-color'] = strokeColor;
+
+            // Add a border if they finished part 1 (but didn't place) and haven't finished part 2
+            const borderColor = (pos2 !== -1 || pos1 <= 2) ? 'transparent' : 'rgba(0,0,0,0.2)';
+            star.style['border'] = `4px solid ${borderColor}`
+
             star.classList.add('day');
-            star.style['grid-column'] = `${i + 6}`
             if (pos2 >= 0) {
                 star.style.position = 'relative';
                 if (!star2?.gaveUp) {
@@ -627,13 +640,15 @@ function buildMedalGrid(members) {
             acc.gold += medalsForDay(day, 0);
             acc.silver += medalsForDay(day, 1);
             acc.bronze += medalsForDay(day, 2);
+            acc.tin += medalsForDay(day, 3);
             return acc;
-        }, {gold: 0, silver: 0, bronze: 0})
+        }, {gold: 0, silver: 0, bronze: 0, tin: 0})
 
         append(el, [
             div({class: 'medal-count gold'}, text(medals.gold)),
             div({class: 'medal-count silver'}, text(medals.silver)),
-            div({class: 'medal-count bronze'}, text(medals.bronze))
+            div({class: 'medal-count bronze'}, text(medals.bronze)),
+            div({class: 'medal-count tin'}, text(medals.tin))
         ])
 
         el.appendChild(
@@ -677,6 +692,8 @@ function getStarTimestamp(member, day, star) {
 
 function getDayStartTime(day, ts) {
     if (!ts) return undefined;
+
+    if(day === 25) return 1609009200000; //2020-12-26 2pm
 
     const startOfDay = DateTime.local(2020, 12, 1)
         .setZone('America/Toronto', {keepLocalTime: true})
