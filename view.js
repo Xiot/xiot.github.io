@@ -36,12 +36,30 @@ function transformData(input) {
     return members;
 }
 
-function applyOverrides(members) {
-    members.forEach(m => {
+const OVERRIDES = [
+    // Everyone gets gold for 25.2
+    m => {
         const lastDay = m.days[24];
         if (!lastDay?.star2) return;
         lastDay.star2.timestamp = lastDay.star1.timestamp;
         lastDay.star2.duration = 0;
+    },
+    // Calculate didGiveUp
+    m => {
+        m.days.forEach(day => {
+            if (didGiveUp(m, day.day, 1)) {
+                day.star1.gaveUp = true;
+            }
+            if (didGiveUp(m, day.day, 2)) {
+                day.star2.gaveUp = true;
+            }
+        })
+    }
+]
+
+function applyOverrides(members) {
+    members.forEach(m => {
+        OVERRIDES.forEach(fn => fn(m));
     })
 }
 function populatePositions(members) {
@@ -127,9 +145,9 @@ function buildMemberDayStats(member, day) {
         if (!ts) { return undefined; }
         const duration = DateTime.fromMillis(ts).diff(startTime).as('milliseconds');
         return {
+            index: star,
             timestamp: ts,
             duration,
-            gaveUp: didGiveUp(member, day, star)
         }
     }
 
