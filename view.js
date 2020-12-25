@@ -42,7 +42,7 @@ const OVERRIDES = [
         const lastDay = m.days[24];
         if (!lastDay?.star2) return;
         lastDay.star2.timestamp = lastDay.star1.timestamp;
-        lastDay.star2.duration = 0;
+        lastDay.star2.duration = 1000;
     },
     // Calculate didGiveUp
     m => {
@@ -62,28 +62,34 @@ function applyOverrides(members) {
         OVERRIDES.forEach(fn => fn(m));
     })
 }
+
+function byNumber(l, r) {
+    return l - r;
+}
+
 function populatePositions(members) {
 
     range(25).forEach(day => {
-        const data1 = [...members]
-            .sort(membersByStar(day, 1));
 
-        const data2 = [...members]
-            .sort(membersByStar(day, 2));
+        const data1 = members
+            .map(m => m.days[day].star1?.duration)
+            .filter(Boolean)
+            .sort(byNumber);
 
-        let pos = 0;
-        for(i = 0; i < data1.length; i++) {
-            const star = data1[i].days[day].star1;
-            if (star)
-                star.position = star.gaveUp ? (100 + i) : pos++;
+        const data2 = members
+            .map(m => m.days[day].star2?.duration)
+            .filter(Boolean)
+            .sort(byNumber);
+
+        function modifyStar(star, sortedDurations) {
+            if (!star) return;
+            star.position = sortedDurations.indexOf(star.duration);
         }
-        pos = 0;
-        for(i = 0; i < data2.length; i++) {
-            const star = data2[i].days[day].star2;
-            if (star) {
-                star.position = star.gaveUp ? (100 + i) : pos++;
-            }
-        }
+
+        members.forEach(m => {
+            modifyStar(m.days[day].star1, data1);
+            modifyStar(m.days[day].star2, data2);
+        })
     })
 }
 
