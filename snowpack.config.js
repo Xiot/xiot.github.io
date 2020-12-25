@@ -10,7 +10,8 @@ module.exports = {
   },
   devOptions: {
     port: 3001,
-    secure: true
+    secure: true,
+    hmr: true,
   },
   buildOptions: {
     out: 'dist',
