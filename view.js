@@ -72,18 +72,21 @@ function populatePositions(members) {
     range(25).forEach(day => {
 
         const data1 = members
-            .map(m => m.days[day].star1?.duration)
-            .filter(Boolean)
+            .map(m => m.days[day].star1)
+            .filter(s => s && !s.gaveUp)
+            .map(s => s.duration)
             .sort(byNumber);
 
         const data2 = members
-            .map(m => m.days[day].star2?.duration)
-            .filter(Boolean)
+            .map(m => m.days[day].star2)
+            .filter(s => s && !s.gaveUp)
+            .map(s => s.duration)
             .sort(byNumber);
 
         function modifyStar(star, sortedDurations) {
             if (!star) return;
-            star.position = sortedDurations.indexOf(star.duration);
+            const position = sortedDurations.indexOf(star.duration);
+            star.position = position === -1 ? members.length : position;
         }
 
         members.forEach(m => {
