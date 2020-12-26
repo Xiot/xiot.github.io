@@ -720,7 +720,7 @@ function getStarTimestamp(member, day, star) {
 function getDayStartTime(day, ts) {
     if (!ts) return undefined;
 
-    if(day === 25) return 1609009200000; //2020-12-26 2pm
+    if(day === 25) return DateTime.fromMillis(1609009200000); //2020-12-26 2pm
 
     const startOfDay = DateTime.local(2020, 12, 1)
         .setZone('America/Toronto', {keepLocalTime: true})
