@@ -8,7 +8,8 @@ const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io
 const statsJsonUri = 'https://portal.xiot.ca/aoc-2021.json';
 const trophySvg = createTrophy();
 
-const startOffset = (9 * 60 + 30) * 60 * 1000;
+// 9am
+const startOffset = (9 * 60) * 60 * 1000;
 
 window.onload = load;
 
@@ -831,14 +832,14 @@ function didGiveUp(member, day, star) {
 }
 
 const disqualified = {
-    "Chris Thomas": {
-        "13" : {
-            "2": true
-        }
-    },
-    "S. Sepehr": {
-        "13": {
-            "2": true
-        }
-    }
+    // "Chris Thomas": {
+    //     "13" : {
+    //         "2": true
+    //     }
+    // },
+    // "S. Sepehr": {
+    //     "13": {
+    //         "2": true
+    //     }
+    // }
   }
