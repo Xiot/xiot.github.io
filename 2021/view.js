@@ -9,7 +9,7 @@ const statsJsonUri = 'https://portal.xiot.ca/aoc-2021.json';
 const trophySvg = createTrophy();
 
 // 9am
-const startOffset = (9 * 60) * 60 * 1000;
+const startOffset = (9 * 60 + 30) * 60 * 1000;
 
 window.onload = load;
 
