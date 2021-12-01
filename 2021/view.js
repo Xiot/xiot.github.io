@@ -15,6 +15,8 @@ const OFFSET_MIN = 30;
 // 9:30am
 const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
 
+const NON_YYZ = ['Gabriel Kanegae'];
+
 window.onload = load;
 
 function load() {
@@ -31,6 +33,7 @@ function load() {
 
 function transformData(input) {
     const members = Object.values(input.members)
+        .filter(memberFilter()) // he's too good.
         .map(transformMemberData)
         .filter(x => x.lastAttempted >= 0);
 
@@ -863,3 +866,10 @@ const disqualified = {
     //     }
     // }
   }
+
+function memberFilter() {
+    const filter = window.location.search.match(/filter=(.+)&?/);
+
+    if (filter && filter[1] === 'all') return () => true;
+    return (m) => !NON_YYZ.includes(m.name);
+}
