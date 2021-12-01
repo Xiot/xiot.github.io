@@ -8,8 +8,12 @@ const statsJsonUriLocal = 'https://raw.githubusercontent.com/Xiot/xiot.github.io
 const statsJsonUri = 'https://portal.xiot.ca/aoc-2021.json';
 const trophySvg = createTrophy();
 
-// 9am
-const startOffset = (9 * 60 + 30) * 60 * 1000;
+const YEAR = 2021;
+const OFFSET_HOUR = 9;
+const OFFSET_MIN = 30;
+
+// 9:30am
+const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
 
 window.onload = load;
 
@@ -739,11 +743,11 @@ function getDayStartTime(day, ts) {
 
     if(day === 25) return DateTime.fromMillis(1609009200000); //2020-12-26 2pm
 
-    const startOfDay = DateTime.local(2020, 12, 1)
+    const startOfDay = DateTime.local(YEAR, 12, 1)
         .setZone('America/Toronto', {keepLocalTime: true})
         .plus({days: day - 1});
 
-    const secondStart = startOfDay.plus({hours: 9, minutes: 30});
+    const secondStart = startOfDay.plus({hours: OFFSET_HOUR, minutes: OFFSET_MIN});
     const solveTime = DateTime.fromMillis(ts);
     return ts > secondStart
         ? secondStart
