@@ -15,7 +15,7 @@ const OFFSET_MIN = 30;
 // 9:30am
 const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
 
-const NON_YYZ = ['Gabriel Kanegae'];
+const NON_YYZ = ['Gabriel Kanegae', 'Maronato'];
 
 window.onload = load;
 
