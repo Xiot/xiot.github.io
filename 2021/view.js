@@ -176,28 +176,27 @@ function buildMemberDayStats(member, day) {
 }
 
 const colors = [
-    'rgba(255, 99, 132, 1)',
-    'rgba(54, 162, 235, 1)',
-    'rgba(255, 206, 86, 1)',
-    'rgba(75, 192, 192, 1)',
-    'rgba(153, 102, 255, 1)',
-    'rgba(255, 159, 64, 1)',
+    '#5B91F4',
+    '#3CCECE',
+    '#FFC043',
+    '#E28454',
+    '#174291',
 
-    // duplicate colors for now
-    'rgba(255, 99, 132, 1)',
-    'rgba(54, 162, 235, 1)',
-    'rgba(255, 206, 86, 1)',
-    'rgba(75, 192, 192, 1)',
-    'rgba(153, 102, 255, 1)',
-    'rgba(255, 159, 64, 1)',
-
-    // duplicate colors for now
-    'rgba(255, 99, 132, 1)',
-    'rgba(54, 162, 235, 1)',
-    'rgba(255, 206, 86, 1)',
-    'rgba(75, 192, 192, 1)',
-    'rgba(153, 102, 255, 1)',
-    'rgba(255, 159, 64, 1)',
+    '#FF5B8C',
+    '#ABF0FF',
+    '#6C78D3',
+    '#6A126A',
+    '#F7DF90',
+    '#F47AFF',
+    '#169E9E',
+    '#FCB09B',
+    '#057C44',
+    '#B0592D',
+    '#A3D1DF',
+    '#C1B5E3',
+    '#B8EBCD',
+    '#3AA76D',
+    '#EA6B6B',
 ];
 
 const last = arr => arr[arr.length -1];
@@ -218,7 +217,7 @@ function minOf(arr, accessor = x => x) {
 
 function buildDifferenceChart(el, members) {
 
-    const isActiveMember = member => member.score > 50;
+    const isActiveMember = member => member.score > 0;
 
     const allPoints = members.filter(isActiveMember).map(x => getPoints(x, {allowEmpty: true}));
     const minOfDay = range(25).map(i => {
