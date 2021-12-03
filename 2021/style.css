@@ -22,14 +22,14 @@ section {
 
 .rank-grid {
   display: grid;
-  grid-template-columns: 2em 10em 10em 36px 10em 36px;
+  grid-template-columns: 2em 10em 8em 36px 8em 36px;
   grid-auto-rows: 2em;
   row-gap: 4px;
   align-items: center;
 }
 
 #speed-grid {
-  grid-template-columns: 2em 10em 10em 36px 10em 36px 10em;
+  grid-template-columns: 2em 10em 8em 36px 8em 36px 8em auto;
 }
 
 .medal-grid {
@@ -91,12 +91,20 @@ section {
 .empty {width: 0; height: 0;}
 
 .time.value {
+  
+}
+.time, .date {
   font-family: 'Courier New';
+}
+
+.date.value {
+  padding-left: 2em;
 }
 
 .time {
   justify-self: end;
 }
+
 .rank-grid .trophy {
   justify-self: end;
 }

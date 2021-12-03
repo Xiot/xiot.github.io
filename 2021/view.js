@@ -608,6 +608,7 @@ function showStatsForDay(day) {
             div({class: 'time value'}, formatStarTime(user.star2)),
             starTrophy(user.star2),
             div({class: 'time value'}, formatDuration(getDelta(user))),
+            div({class: 'date value'}, user.startTime.toString())
         ]);
     });
 }
