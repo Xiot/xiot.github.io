@@ -1,10 +1,10 @@
 const {DateTime, Duration} = luxon;
 
-const statsJsonUri = 'https://portal.xiot.ca/aoc-2021.json';
+const statsJsonUri = 'https://portal.xiot.ca/aoc/2021/stats.json';
+const overrideUri = year => `https://portal.xiot.ca/aoc/${year}/overrides.json`
 
 window.onload = load;
 
-// const name = 'Chris Thomas';
 const ZONE_NAME = 'America/Toronto';
 
 function load() {
@@ -18,18 +18,20 @@ function initialize(members) {
   const container = document.getElementById('container')
   container.classList.remove('loading');
   
-  const name = getUser();
-  if (!name) {
+  const userId = getUserId();
+  if (!userId) {
     append(container, collectUser(members));
     return;
   }
 
-  const usersLastDay = members.find(x => x.name === name)?.lastDay ?? 0
+  const user = members.find(x => x.id === userId);
+  const userName = user.name;
+  const usersLastDay = user.lastDay ?? 0
 
   append(container, div({}, 
     div({}, 
       [
-        text(`Welcome ${name}`),
+        div({}, `Welcome ${userName}`),
         node('a', { 
           href: 'launch.html',
           onclick: () => {
@@ -45,14 +47,15 @@ function initialize(members) {
   append(container, createLauncher(2021, usersLastDay+1 ));  
 }
 
-function getUser() {
-  return window.localStorage.getItem('name');
+const USER_KEY = 'user.id';
+function getUserId() {
+  return window.localStorage.getItem(USER_KEY);
 }
-function setUser(name) {
-  window.localStorage.setItem('name', name);
+function setUserId(name) {
+  window.localStorage.setItem(USER_KEY, name);
 }
 function clearUser() {
-  window.localStorage.removeItem('name');
+  window.localStorage.removeItem(USER_KEY);
 }
 
 function collectUser(members) {
@@ -65,12 +68,12 @@ function collectUser(members) {
           id: 'select-member',         
         }, 
         members.sort((l, r) => l.name - r.name).map(m => 
-          node('option', {value: m.name}, text(m.name))
+          node('option', {value: m.id}, text(m.name))
         )
       ),
       node('button', {onclick: () => {
         const el = document.getElementById('select-member');
-        setUser(el.value);
+        setUserId(el.value);
         window.location.reload();
         
       }}, text('Select'))
@@ -84,7 +87,6 @@ function createLauncher(year, day) {
 
   const unlockTime = DateTime.fromObject({year, month: 12, day}, {zone: ZONE_NAME});
   const currentTime = DateTime.now().setZone(ZONE_NAME);
-  console.log('unlock', unlockTime);
 
   if (currentTime.toMillis() > unlockTime.toMillis()) {
     append(container, node('button', {onclick: () => {
@@ -93,7 +95,11 @@ function createLauncher(year, day) {
   } else {
     const countDown = node('span', {}, text(unlockTime.toRelative()))
     setInterval(() => {
-      countDown.innerText = unlockTime.toRelative();
+      countDown.innerText = `Day ${day} unlocks ` + unlockTime.toRelative();
+
+      if (unlockTime.diffNow().as('seconds') < 0) {
+        window.location.reload();
+      }
     }, 1000);
     append(container, countDown);
   }
@@ -102,17 +108,31 @@ function createLauncher(year, day) {
 }
 
 function launch(year, day) {
+  reportTime(getUserId(), year, day, Date.now());
   const uri = `https://adventofcode.com/${year}/day/${day}`
   window.open(uri);
 }
 
-function reportTime(name, year, day, time) {
-  return Promise.resolve();
+function reportTime(user, year, day, time) {
+  return fetch(overrideUri(year), {
+    method: 'PATCH',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      user,
+      day,
+      time
+    })
+  })
+  .then(response => response.json())
+  .then(data => console.log(data));
 }
 
 function lastDayAttempted(member) {
   const lastDayIndex = range(25).reverse().findIndex(x => member.completion_day_level[String(x +1)]);
   return {
+    id: member.id,
     name: member.name,
     lastDay: lastDayIndex === -1 ? 0 : 25 - lastDayIndex
   }

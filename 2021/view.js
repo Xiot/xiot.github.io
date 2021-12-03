@@ -156,13 +156,14 @@ function buildMemberDayStats(member, day) {
 
     const star1Timestamp = getStarTimestamp(member, day, 1);
     const star2Timestamp = getStarTimestamp(member, day, 2);
-    const startTime = getDayStartTime(day, star1Timestamp);
+    const startTime = getDayStartTime(member, day);
 
     const buildStar = (ts, startTime, star) => {
         if (!ts) { return undefined; }
         const duration = DateTime.fromMillis(ts).diff(startTime).as('milliseconds');
         return {
             index: star,
+            startTime,
             timestamp: ts,
             duration,
         }
@@ -170,6 +171,7 @@ function buildMemberDayStats(member, day) {
 
     return {
         day,
+        startTime,
         star1: buildStar(star1Timestamp, startTime, 1),
         star2: buildStar(star2Timestamp, startTime, 2),
     }
@@ -740,17 +742,23 @@ function getStarTimestamp(member, day, star) {
     return text ? parseInt(text, 10) * 1000 : undefined;
 }
 
-function getDayStartTime(day, ts) {
-    if (!ts) return undefined;
+function getDayStartOverride(member, day) {
+    return member.completion_day_level[String(day)]?.start_ts;
+}
 
-    if(day === 25) return DateTime.fromMillis(1609009200000); //2020-12-26 2pm
+function getDayStartTime(member, day) {
+    const override = getDayStartOverride(member, day);
+    if (override) return DateTime.fromMillis(override);
+
+    const ts = getStarTimestamp(member, day, 1);
+    if (!ts) return undefined;
 
     const startOfDay = DateTime.local(YEAR, 12, 1)
         .setZone('America/Toronto', {keepLocalTime: true})
         .plus({days: day - 1});
 
     const secondStart = startOfDay.plus({hours: OFFSET_HOUR, minutes: OFFSET_MIN});
-    const solveTime = DateTime.fromMillis(ts);
+    
     return ts > secondStart
         ? secondStart
         : startOfDay;
