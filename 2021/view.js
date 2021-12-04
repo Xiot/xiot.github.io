@@ -172,6 +172,7 @@ function buildMemberDayStats(member, day) {
     return {
         day,
         startTime,
+        hasTimeOverride: member.completion_day_level[String(day)]?.start_ts !== undefined,
         star1: buildStar(star1Timestamp, startTime, 1),
         star2: buildStar(star2Timestamp, startTime, 2),
     }
@@ -580,7 +581,16 @@ function showStatsForDay(day) {
         el.removeChild(el.lastChild);
 
     document.getElementById('day').innerText = `Day ${day.day + 1}`;
-
+    append(el, [        
+        div(),
+        div({}, 'Name'),
+        div({class: 'time'}, 'Part I Time'),
+        div(),
+        div({class: 'time'}, 'Part II Time'),
+        div(),
+        div({class: 'time'}, 'Delta Time'),
+        div({class: 'time'}, 'Start Time'),
+    ])
     const sorted = [...day.scores].sort((l, r) => {
 
         const l1 = starDuration(l.star1);
@@ -608,7 +618,12 @@ function showStatsForDay(day) {
             div({class: 'time value'}, formatStarTime(user.star2)),
             starTrophy(user.star2),
             div({class: 'time value'}, formatDuration(getDelta(user))),
-            div({class: 'date value'}, user.startTime.toString())
+            div(
+                {class: `time value ${user.hasTimeOverride ? 'override' : ''}`}, 
+                user.startTime
+                    .setZone('utc', {keepLocalTime: true})
+                    .toFormat('HH:mm:ss')
+            )
         ]);
     });
 }

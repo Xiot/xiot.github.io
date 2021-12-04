@@ -29,7 +29,7 @@ section {
 }
 
 #speed-grid {
-  grid-template-columns: 2em 10em 8em 36px 8em 36px 8em auto;
+  grid-template-columns: 2em 10em 8em 36px 8em 36px 8em 8em;
 }
 
 .medal-grid {
@@ -97,8 +97,8 @@ section {
   font-family: 'Courier New';
 }
 
-.date.value {
-  padding-left: 2em;
+.value.override {
+  font-weight: bold;
 }
 
 .time {
