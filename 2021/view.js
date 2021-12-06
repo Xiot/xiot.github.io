@@ -12,6 +12,9 @@ const YEAR = 2021;
 const OFFSET_HOUR = 9;
 const OFFSET_MIN = 30;
 
+const IS_DELTA_SCORING = window.location.search.includes('score=delta');
+const starScoreTimeFn = IS_DELTA_SCORING ? s => s?.delta : s => s?.duration;
+
 // 9:30am
 const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
 
@@ -82,18 +85,18 @@ function populatePositions(members) {
         const data1 = members
             .map(m => m.days[day].star1)
             .filter(s => s && !s.gaveUp)
-            .map(s => s.duration)
+            .map(starScoreTimeFn)
             .sort(byNumber);
 
         const data2 = members
             .map(m => m.days[day].star2)
             .filter(s => s && !s.gaveUp)
-            .map(s => s.duration)
+            .map(starScoreTimeFn)
             .sort(byNumber);
 
         function modifyStar(star, sortedDurations) {
             if (!star) return;
-            const position = sortedDurations.indexOf(star.duration);
+            const position = sortedDurations.indexOf(starScoreTimeFn(star));
             star.position = position === -1 ? members.length : position;
         }
 
@@ -160,12 +163,16 @@ function buildMemberDayStats(member, day) {
 
     const buildStar = (ts, startTime, star) => {
         if (!ts) { return undefined; }
-        const duration = DateTime.fromMillis(ts).diff(startTime).as('milliseconds');
+        const baseTime = star === 2 && IS_DELTA_SCORING
+            ? DateTime.fromMillis(star1Timestamp)
+            : startTime;
+
         return {
             index: star,
             startTime,
             timestamp: ts,
-            duration,
+            duration: DateTime.fromMillis(ts).diff(startTime).as('milliseconds'),
+            delta: DateTime.fromMillis(ts).diff(baseTime).as('milliseconds')
         }
     }
 
@@ -543,7 +550,7 @@ function initialize(data) {
             div({class: 'name value'}, winner.name),
             div({class: 'time value'}, formatStarTime(winner.star1)),
             starTrophy(winner.star1),
-            div({class: 'time value'}, formatStarTime(winner.star2)),
+            div({class: 'time value'}, formatDuration(starScoreTimeFn(winner.star2))), //formatStarTime(winner.star2)),
             starTrophy(winner.star2),
         ]);
     });
@@ -565,13 +572,13 @@ function getPosition(day, starIndex, star) {
         })
     .sort((l, r) => l - r);
 
-    return sorted.indexOf(star.duration);
+    return sorted.indexOf(starScoreTimeFn(star));
 }
 
 function starDuration(star) {
     if (!star) return Number.MAX_SAFE_INTEGER;
-    if (star.gaveUp) return Number.MAX_SAFE_INTEGER / 2 + star.duration;
-    return star.duration;
+    if (star.gaveUp) return Number.MAX_SAFE_INTEGER / 2 + starScoreTimeFn(star);
+    return starScoreTimeFn(star);
 }
 
 function showStatsForDay(day) {
