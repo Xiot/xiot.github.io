@@ -46,7 +46,7 @@ function initialize(members) {
   ));
 
   let selectedDay = usersLastDay + 1;
-  const daySelector = createDaySelect(YEAR, selectedDay, e => {
+  const daySelector = createDaySelect(YEAR, selectedDay, user.daysComplete, e => {
     const day = e.target.value;
     const el = document.getElementById('launch');
     el.remove();
@@ -60,11 +60,17 @@ function initialize(members) {
 
 
 
-function createDaySelect(year, value, onChange) {  
+function createDaySelect(year, value, disabledValues, onChange) {  
   console.log('createDaySelector', year, value);
   const container = div({style: 'margin-bottom: 12px'}, [
     text('Day: '),
-    node('select', {onchange: onChange}, range(25).map(x => node('option', {value: String(x + 1), selected: (value -1) === x ? 'selected' : undefined}, [text(String(x + 1))])))
+    node('select', {onchange: onChange}, range(25)
+      .filter(x => !disabledValues.includes(x + 1))
+      .map(x => node('option', {
+        value: String(x + 1), 
+        selected: (value -1) === x ? 'selected' : undefined,
+        
+      }, [text(String(x + 1))])))
   ])
   return container;
 }
@@ -156,7 +162,8 @@ function lastDayAttempted(member) {
   return {
     id: member.id,
     name: member.name,
-    lastDay: lastDayIndex === -1 ? 0 : 25 - lastDayIndex
+    lastDay: lastDayIndex === -1 ? 0 : 25 - lastDayIndex,
+    daysComplete: Object.keys(member.completion_day_level).map(x => parseInt(x))
   }
 }
 
