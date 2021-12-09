@@ -6,6 +6,7 @@ const overrideUri = year => `https://portal.xiot.ca/aoc/${year}/overrides.json`
 window.onload = load;
 
 const ZONE_NAME = 'America/Toronto';
+const YEAR = 2021;
 
 function load() {
   const members = fetch(statsJsonUri)
@@ -29,7 +30,7 @@ function initialize(members) {
   const usersLastDay = user.lastDay ?? 0
 
   append(container, div({}, 
-    div({}, 
+    div({style: 'margin-bottom: 12px'}, 
       [
         div({}, `Welcome ${userName}`),
         node('a', { 
@@ -43,8 +44,29 @@ function initialize(members) {
       ]
     )
   ));
-  
-  append(container, createLauncher(2021, usersLastDay+1 ));  
+
+  let selectedDay = usersLastDay + 1;
+  const daySelector = createDaySelect(YEAR, selectedDay, e => {
+    const day = e.target.value;
+    const el = document.getElementById('launch');
+    el.remove();
+    console.log('select', day);
+    container.append(createLauncher(YEAR, day))
+  })
+  append(container, daySelector)
+
+  append(container, createLauncher(YEAR, selectedDay));  
+}
+
+
+
+function createDaySelect(year, value, onChange) {  
+  console.log('createDaySelector', year, value);
+  const container = div({}, [
+    text('Day: '),
+    node('select', {onchange: onChange}, range(25).map(x => node('option', {value: String(x + 1), selected: (value + 1) === x}, [text(String(x + 1))])))
+  ])
+  return container;
 }
 
 const USER_KEY = 'user.id';
@@ -93,7 +115,7 @@ function createLauncher(year, day) {
       launch(2021, day);
     }}, text(`Launch Day ${day}`)))
   } else {
-    const countDown = node('span', {}, text(unlockTime.toRelative()))
+    const countDown = node('span', {}, text(`Day ${day} unlocks ` + unlockTime.toRelative()))
     setInterval(() => {
       countDown.innerText = `Day ${day} unlocks ` + unlockTime.toRelative();
 
