@@ -62,9 +62,9 @@ function initialize(members) {
 
 function createDaySelect(year, value, onChange) {  
   console.log('createDaySelector', year, value);
-  const container = div({}, [
+  const container = div({style: 'margin-bottom: 12px'}, [
     text('Day: '),
-    node('select', {onchange: onChange}, range(25).map(x => node('option', {value: String(x + 1), selected: (value + 1) === x}, [text(String(x + 1))])))
+    node('select', {onchange: onChange}, range(25).map(x => node('option', {value: String(x + 1), selected: (value -1) === x ? 'selected' : undefined}, [text(String(x + 1))])))
   ])
   return container;
 }
@@ -178,7 +178,7 @@ function node(tag, props, children) {
           Object.entries(value).forEach(([key, value]) =>
               el.style[key] = value
           )
-      } else {
+      } else if (value != null) {
           el.setAttribute(key, value);
       }
   });
