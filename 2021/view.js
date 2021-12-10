@@ -702,7 +702,7 @@ function buildMedalGrid(members) {
             star.classList.add('day');
             if (pos2 >= 0) {
                 star.style.position = 'relative';
-                if (!star2?.gaveUp) {
+                if (!star2?.gaveUp && pos2 <= 2) {
                     star.appendChild(
                         div({class: 'position'}, text(pos2+1))
                     )
@@ -870,7 +870,7 @@ function starTrophy(star, props) {
 function trophy(position, props) {
     if (position === -1) return div({class: 'trophy'});
     if (position === -2) return div({class: 'trophy'}, text('DNF'));
-    if (position < 0 || position > 2) return div({class: 'trophy'});
+    if (position < 0 || position > 2) return div({class: 'trophy position'}, text(position + 1));
     const classes = ['gold', 'silver', 'bronze'];
     const className = classes[position];
 

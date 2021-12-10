@@ -149,6 +149,13 @@ section {
 .trophy.dnf {
   font-size: 14px;
 }
+.trophy.position {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.75em;
+}
 
 .trophy div {
   display: flex;
