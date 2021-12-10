@@ -142,6 +142,7 @@ function membersByTotalScore(l, r) {
 
 function transformMemberData(member) {
     return {
+        id: member.id,
         name: member.name,
         days: range(25).map(index => {
             return buildMemberDayStats(member, index + 1);
@@ -475,13 +476,15 @@ const getPoints = (member, opts) => member.days.reduce((acc, day) => {
     if (acc === undefined) {
         return [day.score];
     } else {
-        const previousScore = last(acc.filter(Boolean));
+        const previousScore = last(acc.filter(x => x != null));
         const score = day.score
             ? day.score
             : day.day <= member.lastAttempted
                 ? 0
                 : allowEmpty ? 0 : undefined;
-        return [...acc, (score != null && previousScore) ? previousScore + score : undefined];
+        
+        const dayScore = (score != null && previousScore != null) ? previousScore + score : undefined; 
+        return [...acc, dayScore];
     }
 }, undefined)
 
