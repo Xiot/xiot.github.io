@@ -888,6 +888,11 @@ function didGiveUp(member, day, star) {
 }
 
 const disqualified = {
+    "Tonia Tong": {
+        "15": {
+            "2": true
+        }
+    }
     // "Chris Thomas": {
     //     "13" : {
     //         "2": true
