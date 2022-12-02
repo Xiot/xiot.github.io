@@ -9,7 +9,7 @@ const ZONE_NAME = 'America/Toronto';
 const YEAR = 2022;
 
 function load() {
-  const members = fetch(statsJsonUri)
+  fetch(statsJsonUri)
     .then(x => x.json())
     .then(x => Object.values(x.members).map(lastDayAttempted))
     .then(initialize);
@@ -26,8 +26,8 @@ function initialize(members) {
   }
 
   const user = members.find(x => x.id === userId);
-  const userName = user.name;
-  const usersLastDay = user.lastDay ?? 0
+  const userName = user?.name ?? getUserName();
+  const usersLastDay = user?.lastDay ?? 0
 
   append(container, div({}, 
     div({style: 'margin-bottom: 12px'}, 
@@ -46,11 +46,11 @@ function initialize(members) {
   ));
 
   let selectedDay = usersLastDay + 1;
-  const daySelector = createDaySelect(YEAR, selectedDay, user.daysComplete, e => {
+  const daySelector = createDaySelect(YEAR, selectedDay, user?.daysComplete ?? [], e => {
     const day = e.target.value;
     const el = document.getElementById('launch');
     el.remove();
-    console.log('select', day);
+    
     container.append(createLauncher(YEAR, day))
   })
   append(container, daySelector)
@@ -61,7 +61,7 @@ function initialize(members) {
 
 
 function createDaySelect(year, value, disabledValues, onChange) {  
-  console.log('createDaySelector', year, value);
+  
   const container = div({style: 'margin-bottom: 12px'}, [
     text('Day: '),
     node('select', {onchange: onChange}, range(25)
@@ -76,6 +76,7 @@ function createDaySelect(year, value, disabledValues, onChange) {
 }
 
 const USER_KEY = 'user.id';
+const USER_NAME_KEY = 'user.name';
 function getUserId() {
   return window.localStorage.getItem(USER_KEY);
 }
@@ -84,6 +85,13 @@ function setUserId(name) {
 }
 function clearUser() {
   window.localStorage.removeItem(USER_KEY);
+  window.localStorage.removeItem(USER_NAME_KEY);
+}
+function getUserName() {
+  return window.localStorage.getItem(USER_NAME_KEY);
+}
+function setUserName(name) {
+  window.localStorage.setItem(USER_NAME_KEY, name);
 }
 
 function collectUser(members) {
@@ -102,6 +110,10 @@ function collectUser(members) {
       node('button', {onclick: () => {
         const el = document.getElementById('select-member');
         setUserId(el.value);
+        
+        const node = Array.from(el.children).find(x => x.value === el.value);        
+        setUserName(node?.innerText);
+
         window.location.reload();
         
       }}, text('Select'))
