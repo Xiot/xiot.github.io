@@ -1,0 +1,280 @@
+@import '../fonts/style.css';
+
+body {
+  font-family: 'UberMoveText';
+}
+
+section {
+  margin-bottom: 2em;
+  font-size: 1em;
+}
+
+#page-header {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  margin-bottom: 32px;
+}
+
+#page-header h1 {
+  display: inline-block;
+}
+
+.rank-grid {
+  display: grid;
+  grid-template-columns: 2em 10em 8em 36px 8em 36px;
+  grid-auto-rows: 2em;
+  row-gap: 4px;
+  align-items: center;
+}
+
+#speed-grid {
+  grid-template-columns: 2em 10em 8em 36px 8em 36px 8em 8em;
+}
+
+.medal-grid {
+  display: grid;
+  grid-template-columns: [start] auto repeat(4, [medal] auto) [name] 10em repeat(25, [day] auto) minmax(0, 1fr) [end];
+  grid-auto-rows: auto;
+  gap: 8px 8px;
+}
+
+.medal-grid .trophy {
+  padding: 4px;
+}
+
+.medal-grid .header-border {
+  height: 2px;
+  grid-column: start / end;
+  grid-row: 2;
+  background-color: black;
+}
+
+.medal-grid .header {
+  font-weight: bold;
+}
+
+.medal-grid .trophy.header {
+  width: 16px;
+  height: 16px;
+}
+
+.medal-grid .medal-count {
+  color: black;
+  justify-self: center;
+}
+
+.medal-grid .day.header {
+  justify-self: center;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.medal-grid .score {
+  justify-self: end;
+  padding-left: 8px;
+}
+
+@media (max-width: 800px) {
+  .rank-grid {
+    grid-template-columns: auto auto 1fr 36px 1fr 36px;
+  }
+  .rank-grid div.name {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .rank-grid div.day {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+.empty {width: 0; height: 0;}
+
+.time.value {
+  
+}
+.time, .date {
+  font-family: 'Courier New';
+}
+
+.value.override {
+  font-weight: bold;
+}
+
+.time {
+  justify-self: end;
+}
+
+.rank-grid .trophy {
+  justify-self: end;
+}
+
+.medal-grid div {
+  display: flex;
+  align-items: center;
+}
+
+.score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#fastest {
+  margin-top: 32px;
+}
+
+
+.day {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.trophy {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  stroke: black;
+  stroke-width: 3em;
+}
+
+.trophy.dnf {
+  font-size: 14px;
+}
+.trophy.position {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.75em;
+}
+
+.trophy div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.8em;
+  text-shadow: 0 0 1px white;
+  position: absolute;
+  left: -2px; right: 0; top: 0; bottom: 0;
+  color: black;
+  padding-top: 2px
+}
+
+i.trophy svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gold {
+  color: gold;
+}
+
+.silver {
+  color: silver;
+}
+
+.bronze {
+  color: #cd7f32;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.medal-grid {
+  position: relative;
+}
+
+/* .medal-grid::before {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  grid-row: 2 / span 40;
+  grid-column: medal 1 / span 3;
+  background-color: rgb(240,240,240);
+  content: "";
+  z-index: -1;
+} */
+
+.header {
+  align-self: end;
+  margin-left: 4px;
+  margin-right: 4px;
+  padding-top: 16px;
+}
+
+#rank-chart-container {
+  position: relative;
+  height: 40vh;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.graph-selector {
+  margin-bottom: 12px;
+}
+
+.graph-selector div {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+#container {
+  position: relative;
+}
+#container .spinner {
+  display: none;
+}
+
+#container.loading .spinner {
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100vh - 132px - 16px);
+  background-color: white;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.spinner-container {
+  position: relative;
+}
+.spinner-container::before {
+  content: "loading"
+}
+
+#container.loading .spinner .spinner-bar {
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  margin-top: 4px;
+  background-color: black;
+  animation: bar 1.2s ease-in-out infinite;
+}
+
+@keyframes bar {
+  0% {
+    left: 0px;
+  }
+  50% {
+    left: calc(100% - 10px);
+  }
+  100% {
+    left: 0px
+  }
+}
