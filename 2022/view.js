@@ -28,8 +28,7 @@ function load() {
         document.getElementById('root').classList.add('phone')
     }
 
-    fetch(statsJsonUri)
-        .catch(ex => fetch(statsJsonUriLocal))
+    fetch(statsJsonUriLocal)
         .then(x => x.json())
         .then(data => initialize(data));
 }
