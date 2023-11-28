@@ -7,7 +7,7 @@ const overrideUri = (year) =>
 window.onload = load;
 
 const ZONE_NAME = "America/Toronto";
-const YEAR = 2022;
+const YEAR = 2023;
 
 function load() {
   fetch(statsJsonUri)
@@ -161,7 +161,7 @@ function createLauncher(year, day) {
         "button",
         {
           onclick: () => {
-            launch(2022, day);
+            launch(2023, day);
           },
         },
         text(`Launch Day ${day}`)
