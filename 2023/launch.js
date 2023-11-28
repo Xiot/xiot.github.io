@@ -9,10 +9,33 @@ window.onload = load;
 const ZONE_NAME = "America/Toronto";
 const YEAR = 2023;
 
+const OLD_USERS = [
+  "enjoylife",
+  "Gabriel Kanegae",
+  "Stefan Gavrilovic",
+  "barkls",
+  "andrewkho",
+  "Adeel Ahmad",
+  "Oleksandr Bukaiev",
+  "Wenbo Dai",
+  "Tonia Tong",
+  "Adham Tammam",
+  "Jiamin Shi",
+  "utkuyabas",
+  "Maronato",
+  "alisa k",
+  "Chris Li",
+  "Jason Wang",
+];
+
 function load() {
   fetch(statsJsonUri)
     .then((x) => x.json())
-    .then((x) => Object.values(x.members).map(lastDayAttempted))
+    .then((x) =>
+      Object.values(x.members)
+        .filter((x) => !OLD_USERS.includes(x.name))
+        .map(lastDayAttempted)
+    )
     .then(initialize);
 }
 
