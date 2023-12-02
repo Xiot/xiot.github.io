@@ -1,7 +1,6 @@
 /* eslint-env browser */
 
 const { DateTime, Duration } = luxon;
-
 const PARSE_TIME = Date.now();
 
 const statsJsonUriLocal =
@@ -18,6 +17,8 @@ const starScoreTimeFn = IS_DELTA_SCORING ? (s) => s?.delta : (s) => s?.duration;
 
 // 9:30am
 const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
+
+const EST = "America/Toronto";
 
 const NON_YYZ = ["Gabriel Kanegae", "Maronato"];
 
@@ -629,6 +630,8 @@ function showStatsForDay(day) {
   };
 
   sorted.forEach((user, index) => {
+    const startTime = user.startTime;
+
     append(el, [
       div({ class: "day value" }, (index + 1).toString()),
       div({ class: "name value" }, user.name),
@@ -639,9 +642,7 @@ function showStatsForDay(day) {
       div({ class: "time value" }, formatDuration(getDelta(user))),
       div(
         { class: `time value ${user.hasTimeOverride ? "override" : ""}` },
-        user.startTime
-          .setZone("utc", { keepLocalTime: true })
-          .toFormat("HH:mm:ss")
+        startTime.toFormat("HH:mm:ss")
       ),
     ]);
   });
@@ -800,9 +801,12 @@ function getDayStartTime(member, day) {
   const ts = getStarTimestamp(member, day, 1);
   if (!ts) return undefined;
 
-  const startOfDay = DateTime.local(YEAR, 12, 1)
-    .setZone("America/Toronto", { keepLocalTime: true })
-    .plus({ days: day - 1 });
+  const startOfDay = DateTime.fromObject(
+    { year: YEAR, month: 12, day: 1 },
+    { zone: EST }
+  )
+    .plus({ days: day - 1 })
+    .setZone("default");
 
   const secondStart = startOfDay.plus({
     hours: OFFSET_HOUR,
