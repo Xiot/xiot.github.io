@@ -18,7 +18,7 @@ const starScoreTimeFn = IS_DELTA_SCORING ? (s) => s?.delta : (s) => s?.duration;
 
 // 9:30am
 const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
-const timezone = "America/Toronto";
+
 const NON_YYZ = ["Gabriel Kanegae", "Maronato"];
 
 window.onload = load;
@@ -639,7 +639,9 @@ function showStatsForDay(day) {
       div({ class: "time value" }, formatDuration(getDelta(user))),
       div(
         { class: `time value ${user.hasTimeOverride ? "override" : ""}` },
-        user.startTime.setZone(timezone).toFormat("HH:mm:ss")
+        user.startTime
+          .setZone("utc", { keepLocalTime: true })
+          .toFormat("HH:mm:ss")
       ),
     ]);
   });
