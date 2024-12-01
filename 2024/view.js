@@ -20,7 +20,7 @@ const startOffset = (OFFSET_HOUR * 60 + OFFSET_MIN) * 60 * 1000;
 
 const EST = "America/Toronto";
 
-const NON_YYZ = ["Gabriel Kanegae", "Maronato"];
+const NON_YYZ = ["Gabriel Kanegae", "Maronato", "gabekanegae"];
 
 window.onload = load;
 
