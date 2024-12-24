@@ -773,17 +773,15 @@ function isPosition(star, target) {
 }
 
 function dataByDay(members) {
-  return range(25)
-    .map((day) => ({
-      day,
-      scores: members
-        .map((m) => ({
-          name: m.name,
-          ...m.days[day],
-        }))
-        .filter((m) => m.star1 || m.star2),
-    }))
-    .filter((d) => d.scores.length > 0);
+  return range(25).map((day) => ({
+    day,
+    scores: members.map((m) => ({
+      name: m.name,
+      ...m.days[day],
+    })),
+    // .filter((m) => m.star1 || m.star2),
+  }));
+  // .filter((d) => d.scores.length > 0);
 }
 
 function range(to) {
